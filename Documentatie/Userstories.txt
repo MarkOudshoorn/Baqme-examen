@@ -1,0 +1,22 @@
+Als gebruiker wil ik:
+-Een dashboard waar al het werk dat moet gebeuren 
+en klaar is op staat
+
+-kunnen zien wat er aan de fietsen die niet af zijn 
+moet gebeuren
+
+-fietsen die af zijn kunnen verplaatsen naar de tabel 
+"klaar", zodat de persoon die hem moet ophalen weet dat 
+die klaar is 
+
+-een navbar waardoor ik toegang heb tot de rest van de website
+
+-dat de website iedere 5 minuten automatisch refreshed 
+zodat de pagina en de gegevens erop up-to-date blijven 
+
+-als ik de fiets van de ene kolom naar de andere verplaats 
+(bijv. van "Fixing" naar "Fixed") dat de database achter de 
+schermen dat laat reflecteren
+
+-de website styling en kleuren in-line hebben met de rest van 
+Baqme
