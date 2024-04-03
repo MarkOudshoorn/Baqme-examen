@@ -1,5 +1,4 @@
 <?php
-require_once "DBconnecting.php";
 class GPSData {
     private $id;
     private $title;
