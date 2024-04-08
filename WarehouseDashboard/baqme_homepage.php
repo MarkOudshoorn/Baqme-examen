@@ -7,7 +7,9 @@ if (!isset($_SESSION['gebruiker_id'])) {
     exit;
 }
 
-require_once "DBconnecting.php"; // Inclusief het bestand voor databaseverbinding
+require_once "Classes/wh-issues.php";
+require_once "Global/DBconnect.php"; // Inclusief het bestand voor databaseverbinding
+global $db;
 
 // Controleer de rol van de ingelogde gebruiker
 $rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : '';
@@ -45,7 +47,7 @@ if (isset($_GET['logout'])) {
 
 <main>
     <?php
-    require_once "wh-issuesklass.php";
+
 
     // Maak een lege array om de WHissues objecten op te slaan
     $issues = [];
@@ -54,28 +56,24 @@ if (isset($_GET['logout'])) {
     $sql = "SELECT id, name, title, content FROM wh_issues";
 
     // Voer de query uit
-    $result = $pdo->query($sql);
+    $stmt = $db->pdo->prepare($sql);
+    $stmt->execute();
 
-    // Controleer of er resultaten zijn
-    if ($result->rowCount() > 0) {
-        // Loop door de resultaten en maak voor elk resultaat een WHissues object
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            // Maak een nieuw WHissues object met de gegevens uit de database
-            $issue = new WHissues($row['id'], $row['name'], $row['title'], $row['content']);
 
-            // Voeg het object toe aan de array
-            $issues[] = $issue;
-        }
-    } else {
-        echo "Geen resultaten gevonden.";
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Maak een nieuw WHissue object met de gegevens uit de database
+        $issue = new WHissue($row);
+    
+        // Voeg het object toe aan de array
+        $issues[] = $issue;
     }
 
-    // Loop door de array met WHissues objecten en toon de gegevens
+    // Loop door de array met WHissue objecten en toon de gegevens
     foreach ($issues as $issue) {
-        echo "ID: " . $issue->getId() . "<br>";
-        echo "Naam: " . $issue->getName() . "<br>";
-        echo "Titel: " . $issue->getTitle() . "<br>";
-        echo "Inhoud: " . $issue->getContent() . "<br>";
+        echo "ID: " . $issue->Get("id") . "<br>";
+        echo "Naam: " . $issue->Get("name") . "<br>";
+        echo "Titel: " . $issue->Get("title") . "<br>";
+        echo "Inhoud: " . $issue->Get("content") . "<br>";
         echo "----------------------<br>";
     }
     ?>

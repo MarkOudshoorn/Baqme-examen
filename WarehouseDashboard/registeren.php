@@ -7,7 +7,8 @@ if(!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-require_once "DBconnecting.php";
+require_once "Global/DBconnecting.php";
+global $db;
 
 $foutmelding = "";
 
@@ -27,7 +28,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             // Bereid de SQL-statement voor om gebruiker toe te voegen aan de database
             $sql = "INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol) VALUES (:gebruikersnaam, :wachtwoord, :rol)";
-            $stmt = $pdo->prepare($sql);
+            $stmt = $db->pdo->prepare($sql);
 
             // Hash het wachtwoord
             $hashed_wachtwoord = password_hash($wachtwoord, PASSWORD_DEFAULT);
