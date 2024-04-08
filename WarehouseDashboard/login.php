@@ -7,8 +7,8 @@ if(isset($_SESSION['gebruiker_id'])) {
     exit;
 }
 
-require_once "DBconnecting.php";
-
+require_once "Global/DBconnect.php";
+global $db;
 $foutmelding = "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -21,7 +21,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
         // Bereid de SQL-statement voor
-        $stmt = $pdo->prepare($sql);
+        $stmt = $db->pdo->prepare($sql);
         
         // Bind parameters
         $stmt->bindParam(1, $gebruikersnaam, PDO::PARAM_STR);

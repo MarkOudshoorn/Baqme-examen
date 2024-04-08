@@ -7,7 +7,7 @@ if(!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-require_once "Global/DBconnecting.php";
+require_once "Global/DBconnect.php";
 global $db;
 
 $foutmelding = "";
