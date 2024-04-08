@@ -9,19 +9,27 @@ if(isset($_SESSION['gebruiker_id'])) {
 
 require_once "Global/DBconnect.php";
 global $db;
-$foutmelding = "";
+$foutmelding = null;
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ontvang gegevens van het inlogformulier
-    $gebruikersnaam = htmlspecialchars($_POST['gebruikersnaam']);
-    $wachtwoord = htmlspecialchars($_POST['wachtwoord']);
 
+
+$gebruikersnaam = null;
+$wachtwoord = null;
+
+if(isset($_POST["gebruikersnaam"]) && $_POST["gebruikersnaam"] != null)
+    $gebruikersnaam = $_POST["gebruikersnaam"];
+if(isset($_POST["wachtwoord"]) && $_POST["wachtwoord"] != null)
+    $wachtwoord = $_POST["wachtwoord"];
+
+
+if($gebruikersnaam && $wachtwoord)
+{
     // Query om te controleren of de gebruiker bestaat in de database
-    $sql = "SELECT gebruiker_id, gebruikersnaam, wachtwoord, rol FROM gebruikers WHERE gebruikersnaam = ?";
-    
+    $query = "SELECT gebruiker_id, gebruikersnaam, wachtwoord, rol FROM gebruikers WHERE gebruikersnaam = ?";
+
     try {
         // Bereid de SQL-statement voor
-        $stmt = $db->pdo->prepare($sql);
+        $stmt = $db->pdo->prepare($query);
         
         // Bind parameters
         $stmt->bindParam(1, $gebruikersnaam, PDO::PARAM_STR);
@@ -51,6 +59,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Oops! Er ging iets mis: " . $e->getMessage();
     }
 }
+
 
 ?>
 
@@ -90,7 +99,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
         <div id="loginMenu_content_form">
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <form id="loginMenu_form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div>
                     <input class="input_field" type="text" name="gebruikersnaam" placeholder="Gebruikersnaam...">
                 </div>    
@@ -105,10 +114,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     
     <?php 
-        if($foutmelding)
+        if($foutmelding != null)
+        {
             echo '<div class="errorBox">' . $foutmelding . '</div>';
-        ?>
+        }
+        else
+        {
+            echo '<div class="errorBox_noError"';
+        }
+    ?>
 </div>
-
 </body>
 </html>
