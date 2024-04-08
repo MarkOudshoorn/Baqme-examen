@@ -1,5 +1,4 @@
 :root{
-    --navbar_height: 10vh;
     --citybar_height: 7.5vh;
 }
 
@@ -8,22 +7,17 @@ body, html{
     width: 100%;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
     font-family: "Poppins", sans-serif;
     overflow: hidden;
     background-image: url("Resources/plainBg.jpg");
     background-size: cover;
 }
 
-#navbar {
-    position: fixed;
-    width: 100%;
-    height: var(--navbar_height);
-    background-color: red;
+img{
+    width: inherit;
+    height: inherit;
 }
+
 
 #siteNavigation{
     width: 100%;
@@ -64,7 +58,18 @@ body, html{
 
 
 
-/* login.php */
+/* #region login.php */
+#loginBody{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
 #loginMenu_center{
     z-index: 1;
     display: block;
@@ -283,5 +288,140 @@ body, html{
         color: black;
         font-weight: bold;
     }
-    
 }
+
+/* #endregion login.php */
+
+
+/* #region navbar.php */
+#navbar {
+    z-index: 2;
+    position: fixed;
+    width: 100%;
+    height: 10vh;
+    background-color: rgb(30,33,36);
+}
+
+#navbar_buttonLeft{
+    width: 10vh;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#navbar_buttonLeft img{
+    width: auto;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+#navbar_buttonCenter{
+    display: inline-block;
+    width: 20vh;
+    height: auto;
+    margin-left: calc(50vw - 20vh);
+    cursor: pointer;
+}
+
+#navbar_buttonRight{
+    width: 10vh;
+    height: 100%;
+    padding: 10px;
+    margin-left: auto;
+    box-sizing: border-box;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+#navbar_buttonRight img{
+    width: 53.750px;
+    height: 53.750px;
+    filter: brightness(0) invert(1);
+}
+
+/* #region accountsSubMenu */
+
+.blur {
+    width: 110vw;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    backdrop-filter: blur(10px);
+    transition: 0.5s;
+}
+
+
+.noblur {
+    width: 110vw;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    backdrop-filter: blur(0);
+    transition: 0.5s;
+    pointer-events: none;
+}
+
+#subMenu{
+    z-index: 1;
+    background-color: rgb(40,43,48);
+    position: fixed;
+    top: 10vh;
+    right: -500px;
+    width: 27vw;
+    transition: right 0.3s ease;
+}
+
+#accounts{
+    width: 500px;
+}
+
+.accountPass {
+    height: 100px;
+    width: 350px;
+    display: inline-flex;
+    margin: 30px;
+    background-color: lightgray;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+}
+
+.accountPass_corner{
+    height: 50px;
+    width: 50px;
+    background-color: rgb(40,43,48);
+    transform: rotate(45deg);
+    position: absolute;
+    right: -25px;
+    bottom: -25px;
+}
+
+.accountPass_pfp{
+    width: 100px;
+    height: 100px;
+    border: 2px solid black;
+    box-sizing: border-box;
+    background-color: rgb(179, 179, 179);
+}
+
+.accountPass_details{
+    padding: 10px;
+    width: 300px;
+    height: 100px;
+    background-color: blue;
+}
+
+.accountPass_editIcon{
+    background-color: blue;
+    width: 30px;
+    height: 30px;
+}
+/* #endregion accountsSubMenu */
+
+/* #endregion navbar.php */

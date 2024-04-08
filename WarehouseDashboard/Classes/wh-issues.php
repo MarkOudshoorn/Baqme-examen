@@ -13,7 +13,7 @@ class WHissue {
         $this->content = $row["content"];
     }
 
-    public function Get($whatToGet)
+       public function Get($whatToGet)
     {
         switch($whatToGet)
         {
@@ -28,6 +28,24 @@ class WHissue {
                 break;
             case "content":
                 return $this->content;
+                break;
+            default:
+                return "No valid field found.";
+        }
+    }
+     // Setter methods
+    public function Set($whatToSet, $value)
+    {
+        switch($whatToSet)
+        {
+            case "name":
+                $this->name = $value;
+                break;
+            case "title":
+                $this->title = $value;
+                break;
+            case "content":
+                $this->content = $value;
                 break;
             default:
                 return "No valid field found.";
