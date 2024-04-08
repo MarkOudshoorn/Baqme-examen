@@ -60,24 +60,55 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Inloggen</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h2>Inloggen</h2>
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-        <div>
-            <label>Gebruikersnaam</label>
-            <input type="text" name="gebruikersnaam">
-        </div>    
-        <div>
-            <label>Wachtwoord</label>
-            <input type="password" name="wachtwoord">
+<div id="loginMenu_center">
+    <div id="loginMenu_header">
+        <div id="loginMenu_BQLogo">
+            <img id="loginMenu_BQLogo_img" src="Resources/BQ-Logo.png">
         </div>
-        <div>
-            <input type="submit" value="Inloggen">
+        <div id="loginMenu_BQLogoText">
+            <h2>Dashboard</h2>
         </div>
-    </form>
-    <?php if($foutmelding): ?>
-        <p><?php echo $foutmelding; ?></p>
-    <?php endif; ?>
+    </div>
+    <div id="loginMenu_content">
+        <div id="loginMenu_content_flair">
+            <div id="LineContainer_1">
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+            </div>
+            <div id="LineContainer_2">
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+            </div>
+        </div>
+        <div id="loginMenu_content_form">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <div>
+                    <input class="input_field" type="text" name="gebruikersnaam" placeholder="Gebruikersnaam...">
+                </div>    
+                <div>
+                    <input class="input_field" type="password" name="wachtwoord" placeholder="Wachtwoord...">
+                </div>
+                <div>
+                    <input class="button" type="submit" value="Inloggen">
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <?php 
+        if($foutmelding)
+            echo '<div class="errorBox">' . $foutmelding . '</div>';
+        ?>
+</div>
+
 </body>
 </html>
