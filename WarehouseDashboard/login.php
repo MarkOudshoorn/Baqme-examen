@@ -60,7 +60,6 @@ if($gebruikersnaam && $wachtwoord)
     }
 }
 
-
 ?>
 
 
