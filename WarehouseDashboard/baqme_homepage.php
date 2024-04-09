@@ -7,11 +7,10 @@ if (!isset($_SESSION['gebruiker_id'])) {
     exit;
 }
 
-require_once "Classes/wh-issues.php";
-require_once "Classes/open-issues.php";
 require_once "Classes/vehicles.php";
 require_once "Classes/joyride.php";
-require_once "Classes/gps.php";
+require_once "Classes/wh-issues.php";
+require_once "Classes/open-issues.php";
 require_once "Global/DBconnect.php"; // Inclusief het bestand voor databaseverbinding
 global $db;
 
@@ -29,57 +28,9 @@ if (isset($_GET['logout'])) {
 }
 
 // Steden ophalen uit de database met behulp van de PDO-verbinding
-$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles");
+$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles"); // Alle fleets ophalen, inclusief lege
 $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Controleren of de stad is doorgegeven via GET
-if (isset($_GET['stad'])) {
-    $stad = $_GET['stad'];
-
-    // Query om fietsen op te halen die zich in de opgegeven stad bevinden, inclusief informatie uit wh-issues en open-issues
-    $stmt = $db->pdo->prepare("
-        SELECT v.*, wh.title AS wh_issue_title, wh.content AS wh_issue_content, oi.title AS open_issue_title, oi.content AS open_issue_content
-        FROM vehicles v
-        LEFT JOIN wh_issues wh ON v.title = wh.name
-        LEFT JOIN open_issues oi ON v.title = oi.name
-        WHERE v.fleet = ?
-    ");
-
-    $stmt->execute([$stad]);
-    $fietsen = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // HTML genereren voor de wh-issues
-    $whIssuesHTML = '<h2>WH Issues</h2>';
-    foreach ($fietsen as $fiets) {
-        if ($fiets['wh_issue_title'] && $fiets['wh_issue_content']) {
-            $whIssuesHTML .= '<div>';
-            $whIssuesHTML .= '<strong>Titel:</strong> ' . $fiets['wh_issue_title'] . '<br>';
-            $whIssuesHTML .= '<strong>Inhoud:</strong> ' . $fiets['wh_issue_content'] . '<br>';
-            $whIssuesHTML .= '</div>';
-        }
-    }
-
-    // HTML genereren voor de open-issues
-    $openIssuesHTML = '<h2>Open Issues</h2>';
-    foreach ($fietsen as $fiets) {
-        if ($fiets['open_issue_title'] && $fiets['open_issue_content']) {
-            $openIssuesHTML .= '<div>';
-            $openIssuesHTML .= '<strong>Titel:</strong> ' . $fiets['open_issue_title'] . '<br>';
-            $openIssuesHTML .= '<strong>Inhoud:</strong> ' . $fiets['open_issue_content'] . '<br>';
-            $openIssuesHTML .= '</div>';
-        }
-    }
-
-    // JSON-respons samenstellen met wh-issues en open-issues
-    $response = array(
-        'whIssuesHTML' => $whIssuesHTML,
-        'openIssuesHTML' => $openIssuesHTML
-    );
-
-    // JSON-respons teruggeven
-    echo json_encode($response);
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
@@ -90,8 +41,7 @@ if (isset($_GET['stad'])) {
 </head>
 <body>
 <header>
-    <div>logo met a herf #
-    </div>
+    <div>logo met a herf #</div>
     <nav>
         <?php if ($rol === 'admin'): ?>
             <a href="registeren.php">Registreren</a>
@@ -100,51 +50,114 @@ if (isset($_GET['stad'])) {
     </nav>
 </header>
 
-<!-- HTML voor het weergeven van de knoppen en fietsen -->
+<!-- HTML voor het weergeven van de knoppen per stad -->
 <div id="steden-buttons">
-    <h2>Steden Categorie</h2>
-    <div id="steden-list">
-        <!-- Hier worden de knoppen voor elke stad toegevoegd -->
-        <?php foreach ($steden as $stad) : ?>
-            <div>
-                <button class="stad-button" data-stad="<?php echo $stad; ?>"><?php echo $stad; ?></button>
-            </div>
-        <?php endforeach; ?>
-    </div>
+    <?php if (!empty($steden)): ?>
+        <h2>Steden Categorie</h2>
+        <div id="steden-list">
+            <!-- Hier worden de knoppen voor elke stad toegevoegd -->
+            <?php foreach ($steden as $stad) : ?>
+                <div>
+                    <button class="stad-button" data-stad="<?php echo $stad; ?>"><?php echo $stad; ?></button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
-<div id="wh-issues-container">
-    <!-- Hier worden de wh-issues weergegeven -->
-</div>
+<?php
+// Loop door alle steden om fietsen op te halen en weer te geven
+foreach ($steden as $stad) {
+    // Query om fietsen op te halen die zich in het magazijn bevinden (warehouse) en in de gekozen stad
+    $stmt_warehouse = $db->pdo->prepare("
+         SELECT v.title, v.fleet, v.vehicletype, v.deploy, j.reason AS joyride_reason, j.status AS joyride_status, GROUP_CONCAT(DISTINCT oi.title) AS open_issues, GROUP_CONCAT(DISTINCT wh.title) AS wh_issues
+         FROM vehicles v
+         LEFT JOIN joyride j ON v.title = j.name
+         LEFT JOIN open_issues oi ON v.title = oi.name
+         LEFT JOIN wh_issues wh ON v.title = wh.name
+         WHERE (v.fleet = ? OR v.fleet = '') AND j.reason = 'in warehouse'
+         GROUP BY v.title
+    ");
 
-<div id="open-issues-container">
-    <!-- Hier worden de open-issues weergegeven -->
-</div>
+    $stmt_warehouse->execute([$stad]);
+    $fietsen_warehouse = $stmt_warehouse->fetchAll(PDO::FETCH_ASSOC);
+
+    // HTML genereren voor de fietsen per stad
+    $html_warehouse = '<div id="warehouse-container-' . $stad . '"><h2>Fietsen in Warehouse voor ' . $stad . '</h2>';
+
+    // Gegevens verwerken voor fietsen in het magazijn
+    foreach ($fietsen_warehouse as $fiets) {
+        $html_warehouse .= "<div class='fiets-container'>";
+        $html_warehouse .= "<div>" . $fiets['title'] . "</div>";
+        //$html_warehouse .= "<div>" . $fiets['fleet'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['vehicletype'] . "</div>";
+        //$html_warehouse .= "<div>" . ($fiets['deploy'] == 1 ? 'Yes' : 'No') . "</div>";
+        //$html_warehouse .= "<div>" . $fiets['joyride_reason'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['joyride_status'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['open_issues'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['wh_issues'] . "</div>";
+        $html_warehouse .= '</div>';
+    }
+
+    // HTML-uitvoer teruggeven
+    echo $html_warehouse . '</div>';
+    
+    // Query om fietsen op te halen die klaar zijn om te gaan (deploy == 1) en in de gekozen stad
+    $stmt_klaar = $db->pdo->prepare("
+        SELECT v.title, v.fleet, v.vehicletype, v.deploy, j.reason AS joyride_reason, j.status AS joyride_status, GROUP_CONCAT(DISTINCT oi.title) AS open_issues, GROUP_CONCAT(DISTINCT wh.title) AS wh_issues
+        FROM vehicles v
+        LEFT JOIN joyride j ON v.title = j.name
+        LEFT JOIN open_issues oi ON v.title = oi.name
+        LEFT JOIN wh_issues wh ON v.title = wh.name
+        WHERE (v.fleet = ? OR v.fleet = '') AND v.deploy = '1'
+        GROUP BY v.title
+    ");
+
+    $stmt_klaar->execute([$stad]);
+    $fietsen_klaar = $stmt_klaar->fetchAll(PDO::FETCH_ASSOC);
+
+    // HTML genereren voor de fietsen klaar om te gaan per stad
+    $html_klaar = '<div id="klaar-container-' . $stad . '"><h2>Fietsen Klaar voor vertrek in ' . $stad . '</h2>';
+
+    // Gegevens verwerken voor fietsen klaar om te gaan
+    foreach ($fietsen_klaar as $fiets) {
+        $html_klaar .= "<div class='fiets-container'>";
+        $html_klaar .= "<div>" . $fiets['title'] . "</div>";
+       // $html_klaar .= "<div>" . $fiets['fleet'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['vehicletype'] . "</div>";
+       // $html_klaar .= "<div>" . ($fiets['deploy'] == 1 ? 'Yes' : 'No') . "</div>";
+       // $html_klaar .= "<div>" . $fiets['joyride_reason'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['joyride_status']. "</div>";
+        $html_klaar .= "<div>" . $fiets['open_issues'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['wh_issues']. "</div>";
+        $html_klaar .= '</div>';
+    }
+
+    // HTML-uitvoer teruggeven
+    echo $html_klaar . '</div>';
+}
+?>
 
 <script>
-    // JavaScript om fietsen op te halen en weer te geven bij het klikken op een stadknop
+    // JavaScript om fietsen te tonen bij het klikken op een stadknop
     document.addEventListener('DOMContentLoaded', function() {
         var stadButtons = document.querySelectorAll('.stad-button');
 
         stadButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 var stad = this.getAttribute('data-stad');
-                // AJAX-verzoek om fietsen op te halen die in de gekozen stad zijn
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == XMLHttpRequest.DONE) {
-                        if (xhr.status == 200) {
-                            // Verkregen fietsgegevens omzetten naar HTML
-                            var response = JSON.parse(xhr.responseText);
-                            document.getElementById('wh-issues-container').innerHTML = response.whIssuesHTML;
-                            document.getElementById('open-issues-container').innerHTML = response.openIssuesHTML;
-                        } else {
-                            console.error('Er is een fout opgetreden bij het ophalen van fietsgegevens');
-                        }
-                    }
-                };
-                xhr.open('GET', 'baqme_homepage.php?stad=' + encodeURIComponent(stad), true);
-                xhr.send();
+                // Verberg alle fietscontainers
+                var fietsContainers = document.querySelectorAll('[id^="warehouse-container"], [id^="klaar-container"]');
+                fietsContainers.forEach(function(container) {
+                    container.style.display = 'none';
+                });
+                // Toon alleen de container voor de gekozen stad
+                var warehouseContainer = document.getElementById('warehouse-container-' + stad);
+                var klaarContainer = document.getElementById('klaar-container-' + stad);
+                if (warehouseContainer && klaarContainer) {
+                    warehouseContainer.style.display = 'block';
+                    klaarContainer.style.display = 'block';
+                }
             });
         });
     });
