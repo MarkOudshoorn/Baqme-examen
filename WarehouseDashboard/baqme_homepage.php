@@ -71,14 +71,12 @@ if (isset($_GET['stad'])) {
 
     // Gegevens verwerken met behulp van de Vehicle klasse voor fietsen in warehouse
     foreach ($fietsen_warehouse as $fiets) {
-        $vehicle = new Vehicle($fiets['title'], $fiets['fleet'], $fiets['vehicletype'], $fiets['deploy']);
-        $html_warehouse .= $vehicle->getHTML();
+        $html_warehouse .= "<p>Title: " . $fiets['title'] . ", Fleet: " . $fiets['fleet'] . ", Vehicle Type: " . $fiets['vehicletype'] . ", Deploy: " . $fiets['deploy'] . "</p>";
     }
 
     // Gegevens verwerken met behulp van de Vehicle klasse voor fietsen klaar om te gaan
     foreach ($fietsen_klaar as $fiets) {
-        $vehicle = new Vehicle($fiets['title'], $fiets['fleet'], $fiets['vehicletype'], $fiets['deploy']);
-        $html_klaar .= $vehicle->getHTML();
+        $html_klaar .= "<p>Title: " . $fiets['title'] . ", Fleet: " . $fiets['fleet'] . ", Vehicle Type: " . $fiets['vehicletype'] . ", Deploy: " . $fiets['deploy'] . "</p>";
     }
 
     // HTML-uitvoer teruggeven
