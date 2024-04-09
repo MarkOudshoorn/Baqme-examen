@@ -9,20 +9,27 @@ if(isset($_SESSION['gebruiker_id'])) {
 
 require_once "Global/DBconnect.php";
 global $db;
+$foutmelding = null;
 
-$foutmelding = "";
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ontvang gegevens van het inlogformulier
-    $gebruikersnaam = htmlspecialchars($_POST['gebruikersnaam']);
-    $wachtwoord = htmlspecialchars($_POST['wachtwoord']);
 
+$gebruikersnaam = null;
+$wachtwoord = null;
+
+if(isset($_POST["gebruikersnaam"]) && $_POST["gebruikersnaam"] != null)
+    $gebruikersnaam = $_POST["gebruikersnaam"];
+if(isset($_POST["wachtwoord"]) && $_POST["wachtwoord"] != null)
+    $wachtwoord = $_POST["wachtwoord"];
+
+
+if($gebruikersnaam && $wachtwoord)
+{
     // Query om te controleren of de gebruiker bestaat in de database
-    $sql = "SELECT gebruiker_id, gebruikersnaam, wachtwoord, rol FROM gebruikers WHERE gebruikersnaam = ?";
-    
+    $query = "SELECT gebruiker_id, gebruikersnaam, wachtwoord, rol FROM gebruikers WHERE gebruikersnaam = ?";
+
     try {
         // Bereid de SQL-statement voor
-        $stmt = $db->pdo->prepare($sql);
+        $stmt = $db->pdo->prepare($query);
         
         // Bind parameters
         $stmt->bindParam(1, $gebruikersnaam, PDO::PARAM_STR);
@@ -61,24 +68,60 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Inloggen</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h2>Inloggen</h2>
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-        <div>
-            <label>Gebruikersnaam</label>
-            <input type="text" name="gebruikersnaam">
-        </div>    
-        <div>
-            <label>Wachtwoord</label>
-            <input type="password" name="wachtwoord">
+<body id="loginBody">
+<div id="loginMenu_center">
+    <div id="loginMenu_header">
+        <div id="loginMenu_BQLogo">
+            <img id="loginMenu_BQLogo_img" src="Resources/BQ-Logo.png">
         </div>
-        <div>
-            <input type="submit" value="Inloggen">
+        <div id="loginMenu_BQLogoText">
+            <h2>Dashboard</h2>
         </div>
-    </form>
-    <?php if($foutmelding): ?>
-        <p><?php echo $foutmelding; ?></p>
-    <?php endif; ?>
+    </div>
+    <div id="loginMenu_content">
+        <div id="loginMenu_content_flair">
+            <div id="LineContainer_1">
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+            </div>
+            <div id="LineContainer_2">
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+                <div class="Line"></div>
+            </div>
+        </div>
+        <div id="loginMenu_content_form">
+            <form id="loginMenu_form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <div>
+                    <input class="input_field" type="text" name="gebruikersnaam" placeholder="Gebruikersnaam...">
+                </div>    
+                <div>
+                    <input class="input_field" type="password" name="wachtwoord" placeholder="Wachtwoord...">
+                </div>
+                <div>
+                    <input class="button" type="submit" value="Inloggen">
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <?php 
+        if($foutmelding != null)
+        {
+            echo '<div class="errorBox">' . $foutmelding . '</div>';
+        }
+        else
+        {
+            echo '<div class="errorBox_noError"';
+        }
+    ?>
+</div>
 </body>
 </html>

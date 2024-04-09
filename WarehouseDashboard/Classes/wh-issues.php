@@ -33,6 +33,24 @@ class WHissue {
                 return "No valid field found.";
         }
     }
+     // Setter methods
+    public function Set($whatToSet, $value)
+    {
+        switch($whatToSet)
+        {
+            case "name":
+                $this->name = $value;
+                break;
+            case "title":
+                $this->title = $value;
+                break;
+            case "content":
+                $this->content = $value;
+                break;
+            default:
+                return "No valid field found.";
+        }
+    }
 }
 
 ?>
