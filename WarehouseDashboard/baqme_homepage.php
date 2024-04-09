@@ -28,7 +28,7 @@ if (isset($_GET['logout'])) {
 }
 
 // Steden ophalen uit de database met behulp van de PDO-verbinding
-$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles"); // Alle fleets ophalen, inclusief lege
+$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''"); // Alle fleets ophalen, inclusief lege
 $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 ?>
