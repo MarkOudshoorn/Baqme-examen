@@ -94,8 +94,7 @@ if (isset($_GET['stad'])) {
 </head>
 <body>
 <header>
-    <div>logo met a herf #
-    </div>
+    <div>logo met a herf #</div>
     <nav>
         <?php if ($rol === 'admin'): ?>
             <a href="registeren.php">Registreren</a>
@@ -104,7 +103,7 @@ if (isset($_GET['stad'])) {
     </nav>
 </header>
 
-<!-- HTML voor het weergeven van de knoppen en fietsen -->
+<!-- HTML voor het weergeven van de knoppen per stad -->
 <div id="steden-buttons">
     <?php if (!empty($steden)): ?>
         <h2>Steden Categorie</h2>
@@ -119,38 +118,99 @@ if (isset($_GET['stad'])) {
     <?php endif; ?>
 </div>
 
-<div id="warehouse-container">
-    <!-- Hier worden de fietsen in warehouse weergegeven -->
-</div>
+<?php
+// Loop door alle steden om fietsen op te halen en weer te geven
+foreach ($steden as $stad) {
+    // Query om fietsen op te halen die zich in het magazijn bevinden (warehouse) en in de gekozen stad
+    $stmt_warehouse = $db->pdo->prepare("
+         SELECT v.title, v.fleet, v.vehicletype, v.deploy, j.reason AS joyride_reason, j.status AS joyride_status, GROUP_CONCAT(DISTINCT oi.title) AS open_issues, GROUP_CONCAT(DISTINCT wh.title) AS wh_issues
+         FROM vehicles v
+         LEFT JOIN joyride j ON v.title = j.name
+         LEFT JOIN open_issues oi ON v.title = oi.name
+         LEFT JOIN wh_issues wh ON v.title = wh.name
+         WHERE (v.fleet = ? OR v.fleet = '') AND j.reason = 'in warehouse'
+         GROUP BY v.title
+    ");
 
-<div id="klaar-container">
-    <!-- Hier worden de fietsen klaar om te gaan weergegeven -->
-</div>
+    $stmt_warehouse->execute([$stad]);
+    $fietsen_warehouse = $stmt_warehouse->fetchAll(PDO::FETCH_ASSOC);
+
+    // HTML genereren voor de fietsen per stad
+    $html_warehouse = '<div id="warehouse-container-' . $stad . '"><h2>Fietsen in Warehouse voor ' . $stad . '</h2>';
+
+    // Gegevens verwerken voor fietsen in het magazijn
+    foreach ($fietsen_warehouse as $fiets) {
+        $html_warehouse .= "<div class='fiets-container'>";
+        $html_warehouse .= "<div>" . $fiets['title'] . "</div>";
+        //$html_warehouse .= "<div>" . $fiets['fleet'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['vehicletype'] . "</div>";
+        //$html_warehouse .= "<div>" . ($fiets['deploy'] == 1 ? 'Yes' : 'No') . "</div>";
+        //$html_warehouse .= "<div>" . $fiets['joyride_reason'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['joyride_status'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['open_issues'] . "</div>";
+        $html_warehouse .= "<div>" . $fiets['wh_issues'] . "</div>";
+        $html_warehouse .= '</div>';
+    }
+
+    // HTML-uitvoer teruggeven
+    echo $html_warehouse . '</div>';
+    
+    // Query om fietsen op te halen die klaar zijn om te gaan (deploy == 1) en in de gekozen stad
+    $stmt_klaar = $db->pdo->prepare("
+        SELECT v.title, v.fleet, v.vehicletype, v.deploy, j.reason AS joyride_reason, j.status AS joyride_status, GROUP_CONCAT(DISTINCT oi.title) AS open_issues, GROUP_CONCAT(DISTINCT wh.title) AS wh_issues
+        FROM vehicles v
+        LEFT JOIN joyride j ON v.title = j.name
+        LEFT JOIN open_issues oi ON v.title = oi.name
+        LEFT JOIN wh_issues wh ON v.title = wh.name
+        WHERE (v.fleet = ? OR v.fleet = '') AND v.deploy = '1'
+        GROUP BY v.title
+    ");
+
+    $stmt_klaar->execute([$stad]);
+    $fietsen_klaar = $stmt_klaar->fetchAll(PDO::FETCH_ASSOC);
+
+    // HTML genereren voor de fietsen klaar om te gaan per stad
+    $html_klaar = '<div id="klaar-container-' . $stad . '"><h2>Fietsen Klaar voor vertrek in ' . $stad . '</h2>';
+
+    // Gegevens verwerken voor fietsen klaar om te gaan
+    foreach ($fietsen_klaar as $fiets) {
+        $html_klaar .= "<div class='fiets-container'>";
+        $html_klaar .= "<div>" . $fiets['title'] . "</div>";
+       // $html_klaar .= "<div>" . $fiets['fleet'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['vehicletype'] . "</div>";
+       // $html_klaar .= "<div>" . ($fiets['deploy'] == 1 ? 'Yes' : 'No') . "</div>";
+       // $html_klaar .= "<div>" . $fiets['joyride_reason'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['joyride_status']. "</div>";
+        $html_klaar .= "<div>" . $fiets['open_issues'] . "</div>";
+        $html_klaar .= "<div>" . $fiets['wh_issues']. "</div>";
+        $html_klaar .= '</div>';
+    }
+
+    // HTML-uitvoer teruggeven
+    echo $html_klaar . '</div>';
+}
+?>
 
 <script>
-    // JavaScript om fietsen op te halen en weer te geven bij het klikken op een stadknop
+    // JavaScript om fietsen te tonen bij het klikken op een stadknop
     document.addEventListener('DOMContentLoaded', function() {
         var stadButtons = document.querySelectorAll('.stad-button');
 
         stadButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 var stad = this.getAttribute('data-stad');
-                // AJAX-verzoek om fietsen op te halen die in de gekozen stad zijn
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == XMLHttpRequest.DONE) {
-                        if (xhr.status == 200) {
-                            // Verkregen fietsgegevens invoegen in de DOM
-                            var response = xhr.responseText;
-                            document.getElementById('warehouse-container').innerHTML = response;
-                            document.getElementById('klaar-container').innerHTML = response;
-                        } else {
-                            console.error('Er is een fout opgetreden bij het ophalen van fietsgegevens');
-                        }
-                    }
-                };
-                xhr.open('GET', 'baqme_homepage.php?stad=' + encodeURIComponent(stad), true);
-                xhr.send();
+                // Verberg alle fietscontainers
+                var fietsContainers = document.querySelectorAll('[id^="warehouse-container"], [id^="klaar-container"]');
+                fietsContainers.forEach(function(container) {
+                    container.style.display = 'none';
+                });
+                // Toon alleen de container voor de gekozen stad
+                var warehouseContainer = document.getElementById('warehouse-container-' + stad);
+                var klaarContainer = document.getElementById('klaar-container-' + stad);
+                if (warehouseContainer && klaarContainer) {
+                    warehouseContainer.style.display = 'block';
+                    klaarContainer.style.display = 'block';
+                }
             });
         });
     });
