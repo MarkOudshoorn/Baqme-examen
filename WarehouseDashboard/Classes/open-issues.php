@@ -12,8 +12,7 @@ class Openissues {
         $this->title = $row["title"];
         $this->content = $row["content"];
     }
-    
-    public function Get($whatToGet)
+        public function Get($whatToGet)
     {
         switch($whatToGet)
         {

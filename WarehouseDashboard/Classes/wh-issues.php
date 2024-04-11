@@ -13,7 +13,7 @@ class WHissue {
         $this->content = $row["content"];
     }
 
-    public function Get($whatToGet)
+       public function Get($whatToGet)
     {
         switch($whatToGet)
         {
