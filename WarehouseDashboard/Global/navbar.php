@@ -207,6 +207,7 @@ function AddAccountPass($gebruiker, $roles)
                 }
                 ?>
             </div>
+            <button id="ibriButton">wasd</button>
         </div>
         
     </nav>

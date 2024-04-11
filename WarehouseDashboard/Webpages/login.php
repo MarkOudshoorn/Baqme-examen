@@ -13,7 +13,7 @@ if (isset($_GET['logout'])) {
 
 // Als de gebruiker al is ingelogd, stuur ze door naar de startpagina
 if(isset($_SESSION['gebruiker_id'])) {
-    header("Location: baqme_homepage.php");
+    header("Location: dashboard.php");
     exit;
 }
 
@@ -58,7 +58,7 @@ if($gebruikersnaam && $wachtwoord)
             $_SESSION["rol"] = $gebruiker['rol']; // Voeg rol toe aan sessie
             
             // Doorstuur de gebruiker naar de startpagina
-            header("Location: baqme_homepage.php");
+            header("Location: dashboard.php");
             exit;
         } else {
             // Foutmelding als gebruikersnaam of wachtwoord onjuist is

@@ -70,6 +70,8 @@ img{
     justify-content: center;
     align-items: center;
     color: white;
+    background-image: url("../Resources/plainBg.jpg");
+    background-size: cover;
 }
 
 #loginMenu_center{
@@ -511,7 +513,7 @@ img{
     position: fixed;
     top: 0;
     right: -500px;
-    height: 200vh;
+    height: 100vh;
     transition: right 0.3s ease;
 }
 
@@ -593,6 +595,15 @@ img{
     border-radius: 25px;
     background-color: rgb(71, 83, 178);
     transition: 500ms;
+}
+
+#ibriButton{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: red;
+    width: 100px;
+    height: 100px;
 }
 
 /* #endregion accountsSubMenu */
