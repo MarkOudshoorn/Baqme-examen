@@ -9,8 +9,6 @@ function hashPassword($password) {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-$editIcon = "../Resources/edit.svg";
-
 // Haal de beschikbare rollen op uit de database
 $roles = [];
 $stmt = $db->pdo->query("SELECT DISTINCT rol FROM gebruikers");
@@ -111,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['saveChanges'])) {
 // Functie om een accountweergave toe te voegen
 function AddAccountPass($gebruiker, $roles)
 {
-    global $howManyAccounts, $editIcon;
+    global $howManyAccounts;
     ?>
     <div class="accountPass">
         <div class="accountPass_pfp">
@@ -192,5 +190,3 @@ function AddAccountPass($gebruiker, $roles)
             </form>
         </div>
     </nav>
-</body>
-</html>
