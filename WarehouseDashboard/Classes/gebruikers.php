@@ -42,9 +42,12 @@ class Gebruiker
     {
         return $this->created_at;
     }
-      public function getProfilePicture()
+    public function getProfilePicture()
     {
-        return $this->profilepicture;
+        if($this->profilepicture == null || $this->profilepicture == "")
+            return "../Resources/user.svg";
+        else
+            return $this->profilepicture;
     }
 
     // Setters

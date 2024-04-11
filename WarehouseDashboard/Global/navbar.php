@@ -81,21 +81,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateRole'])) {
 
 // Check of een POST-verzoek is verzonden om alle wijzigingen op te slaan
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['saveChanges'])) {
-    // Voeg hier de logica toe om alle wijzigingen op te slaan
-    // Dit kan bijvoorbeeld het uitvoeren van een updatequery zijn voor alle records
-    // Zorg ervoor dat je de updatequery's correct opstelt en uitvoert op basis van je specifieke behoeften
-    // Hieronder staat een voorbeeld van hoe je dit zou kunnen doen:
     try {
         // Voor elke gebruiker in de database
         $stmt = $db->pdo->query("SELECT * FROM gebruikers");
         if ($stmt) {
             while($row = $stmt->fetch()) {
                 $accountId = $row["gebruiker_id"];
-                // Voeg hier de logica toe om de wijzigingen voor elke gebruiker op te slaan
-                // Bijvoorbeeld: updatequery's voor wachtwoord, rol, etc.
-                // Update wachtwoord
-                // Update rol
-                // Voer de updatequery's uit
             }
         }
         // Geef een succesmelding weer als alles succesvol is opgeslagen
@@ -154,7 +145,7 @@ function AddAccountPass($gebruiker, $roles)
     <title>Dashboard</title>
 </head>
 <body>
-    <div id="bgBlur" onclick="ToggleSubMenu()"></div>
+<div id="bgBlur" onclick="ToggleSubMenu()"></div>
     <nav id="navbar">
         <div id=navbar_buttonLeft onclick="Redirect('../login.php?logout=true')">
             <img src="../Resources/null.png">
@@ -184,9 +175,5 @@ function AddAccountPass($gebruiker, $roles)
                 ?>
             </div>
         </div>
-        <div id="saveButton">
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
-                <button type='submit' name='saveChanges'>Opslaan</button>
-            </form>
-        </div>
+        
     </nav>

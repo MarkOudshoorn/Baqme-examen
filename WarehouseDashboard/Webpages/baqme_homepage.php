@@ -28,6 +28,7 @@ if (isset($_GET['logout'])) {
     header("Location: login.php");
     exit;
 }
+
 // Steden ophalen uit de database met behulp van de PDO-verbinding
 $stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''"); // Alle fleets ophalen, inclusief lege
 $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -42,25 +43,30 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
                 $fietsen_warehouse = Query_warehouse($stad);
                 ?>
                 <div class="warehouse-list">
-                    <h2>To-do <?= $stad ?></h2>
+                    <h2 class="listHeader-0"><?= $stad ?></h2>
+                    <h2 class="listHeader-1">To-do</h2>
                     <?php foreach ($fietsen_warehouse as $fiets) : ?>
-                        <div class="fiets-container">
-                            <div  class="issue-header"><b><?= $fiets['title'] ?></b>, <?= $fiets['vehicletype'] ?></div>
-                            <?php
+                        <?php
                             $open_issues = explode(',', $fiets['open_issues']);
                             $wh_issues = explode(',', $fiets['wh_issues']);
-                            ?>
+                        ?>
+                        <div class="fiets-container">
+                            <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
                             <div class="issues-container">
-                                <list>
                                 <?php foreach ($open_issues as $issue) : ?>
-                                    <li class="issue"><?php echo trim($issue); ?></li>
+                                    <?php $trimmed = trim($issue); 
+                                    if($trimmed != "")
+                                        echo '<div class="issue">' . $trimmed . '</div>'; ?>
+
                                 <?php endforeach; ?>
 
                                 <?php foreach ($wh_issues as $issue) : ?>
-                                    <li class="issue"><?php echo trim($issue); ?></li>
+                                    <?php $trimmed = trim($issue); 
+                                    if($trimmed != "")
+                                        echo '<div class="issue">' . $trimmed . '</div>'; ?>
                                 <?php endforeach; ?>
-                                </list>
                             </div>
+                            <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -70,7 +76,7 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
                 $fietsen_klaar = Query_done($stad);
                 ?>
                 <div class="togo-list">
-                    <h2>Ready <?= $stad ?></h2>
+                    <h2 class="listHeader-2">Ready</h2>
                     <?php foreach ($fietsen_klaar as $fiets) : ?>
                         <div class="fiets-container">
                         <div style="font-weight: bold;"><?= $fiets['title'], $fiets['vehicletype'] ?></div><
@@ -88,6 +94,7 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
                                     <div class="issue"><?php echo "-", trim($issue); ?></div>
                                 <?php endforeach; ?>
                             </div>
+                            <div class="JRIssues">wasd <?= $fiets["joyride_status"] ?> </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
