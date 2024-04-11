@@ -19,7 +19,15 @@ global $db;
 // Controleer de rol van de ingelogde gebruiker
 $rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : '';
 
-
+// Uitlogfunctionaliteit
+if (isset($_GET['logout'])) {
+    // Vernietig de sessie
+    session_unset();
+    session_destroy();
+    // Stuur de gebruiker door naar de inlogpagina
+    header("Location: login.php");
+    exit;
+}
 // Steden ophalen uit de database met behulp van de PDO-verbinding
 $stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''"); // Alle fleets ophalen, inclusief lege
 $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);

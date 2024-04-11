@@ -1,4 +1,6 @@
 <?php
+
+
 require_once 'DBconnect.php'; 
 require_once '../Classes/gebruikers.php'; 
 
@@ -9,8 +11,6 @@ function hashPassword($password) {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-$editIcon = "../Resources/edit.svg";
-
 // Haal de beschikbare rollen op uit de database
 $roles = [];
 $stmt = $db->pdo->query("SELECT DISTINCT rol FROM gebruikers");
@@ -19,6 +19,35 @@ if ($stmt) {
         $roles[] = $row['rol'];
     }
 }
+// Controleer of de gebruiker is ingelogd en haal de rol op uit de database
+function checkUserRole($db) {
+    // Controleer of de gebruiker is ingelogd
+    if (isset($_SESSION['gebruiker_id'])) {
+        // Haal de gebruikersrol op uit de database
+        $gebruiker_id = $_SESSION['gebruiker_id'];
+        $stmt = $db->pdo->prepare("SELECT rol FROM gebruikers WHERE gebruiker_id = :gebruiker_id");
+        $stmt->bindParam(':gebruiker_id', $gebruiker_id);
+        if ($stmt->execute()) {
+            $row = $stmt->fetch();
+            if ($row) {
+                return $row['rol']; // Geef de rol terug
+            }
+        }
+    }
+    return 'user'; // Standaardrol als de gebruiker niet is ingelogd of als er een fout optreedt
+}
+
+// Functie om de knop voor het beheren van gebruikers weer te geven op basis van de gebruikersrol
+function displayUserManagementButton($role) {
+    if ($role === 'admin') {
+        echo '<div id="navbar_buttonRight" onclick="ToggleSubMenu()">';
+        echo '<img src="../Resources/setting.svg">';
+        echo '</div>';
+    }
+}
+
+// Controleer de gebruikersrol en toon de knop indien nodig
+$role = checkUserRole($db);
 
 // Check of een POST-verzoek is verzonden om wachtwoord bij te werken
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updatePassword'])) {
@@ -81,37 +110,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateRole'])) {
     }
 }
 
-// Check of een POST-verzoek is verzonden om alle wijzigingen op te slaan
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['saveChanges'])) {
-    // Voeg hier de logica toe om alle wijzigingen op te slaan
-    // Dit kan bijvoorbeeld het uitvoeren van een updatequery zijn voor alle records
-    // Zorg ervoor dat je de updatequery's correct opstelt en uitvoert op basis van je specifieke behoeften
-    // Hieronder staat een voorbeeld van hoe je dit zou kunnen doen:
+// Check of een POST-verzoek is verzonden om een gebruiker bij te werken
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateUser'])) {
+    $accountId = $_POST['accountId'];
+    $newPassword = hashPassword($_POST['newPassword']); // Hash het nieuwe wachtwoord
+    $newRole = $_POST['newRole'];
+
     try {
-        // Voor elke gebruiker in de database
-        $stmt = $db->pdo->query("SELECT * FROM gebruikers");
-        if ($stmt) {
-            while($row = $stmt->fetch()) {
-                $accountId = $row["gebruiker_id"];
-                // Voeg hier de logica toe om de wijzigingen voor elke gebruiker op te slaan
-                // Bijvoorbeeld: updatequery's voor wachtwoord, rol, etc.
-                // Update wachtwoord
-                // Update rol
-                // Voer de updatequery's uit
-            }
+        $stmt = $db->pdo->prepare("UPDATE gebruikers SET wachtwoord = :newPassword, rol = :newRole WHERE gebruiker_id = :accountId");
+        $stmt->bindParam(':newPassword', $newPassword);
+        $stmt->bindParam(':newRole', $newRole);
+        $stmt->bindParam(':accountId', $accountId);
+        if ($stmt->execute()) {
+            echo "<script>window.location.href = '../Webpages/baqme_homepage.php?edit=true'</script>";
+        } else {
+            echo "Er is een fout opgetreden bij het bijwerken van de gebruiker.";
+            // Debugging: Voeg een regel toe om de query te bekijken die wordt uitgevoerd
+            echo "Query: " . $stmt->queryString;
         }
-        // Geef een succesmelding weer als alles succesvol is opgeslagen
-        echo "Alle wijzigingen succesvol opgeslagen.";
     } catch (PDOException $e) {
-        // Geef een foutmelding weer als er een fout optreedt bij het opslaan van de wijzigingen
-        echo "Fout bij het opslaan van de wijzigingen: " . $e->getMessage();
+        echo "Fout bij het bijwerken van de gebruiker: " . $e->getMessage();
     }
 }
+
 
 // Functie om een accountweergave toe te voegen
 function AddAccountPass($gebruiker, $roles)
 {
-    global $howManyAccounts, $editIcon;
+    global $howManyAccounts;
     ?>
     <div class="accountPass">
         <div class="accountPass_pfp">
@@ -119,25 +145,22 @@ function AddAccountPass($gebruiker, $roles)
         </div>
         <div class="accountPass_details">
             <?php echo $gebruiker->getGebruikersnaam(); ?><br>
+            <!-- Formulier voor het bijwerken van wachtwoord en rol -->
             <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
                 <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <input type='password' name='newPassword' placeholder='Nieuw Wachtwoord' required>
-                <button type='submit' name='updatePassword'>Wachtwoord bijwerken</button>
+                <input type='password' name='newPassword' placeholder='Nieuw Wachtwoord' >
+                <select name='newRole'>
+    <?php foreach (['admin', 'user'] as $roleOption): ?>
+        <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
+    <?php endforeach; ?>
+</select>
+
+                <button type='submit' name='updateUser'>Wijzigingen Opslaan</button>
             </form>
+            <!-- Formulier voor het verwijderen van een gebruiker -->
             <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
                 <input type='hidden' name='deleteUserId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <button type='submit' name='deleteUser'>Gebruiker verwijderen</button>
-            </form>
-        </div>
-        <div class="accountPass_options">
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
-                <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <select name='newRole'>
-                    <?php foreach ($roles as $role): ?>
-                        <option value='<?php echo $role; ?>'><?php echo $role; ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <button type='submit' name='updateRole'>Rol bijwerken</button>
+                <button type='submit' name='deleteUser'>Gebruiker Verwijderen</button>
             </form>
         </div>
     </div>
@@ -145,28 +168,27 @@ function AddAccountPass($gebruiker, $roles)
     $howManyAccounts++;
 }
 
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../stylesheet.css">
-    <script src="jsFunctions.js"></script>
+    <link rel="stylesheet" href="../Global/stylesheet.css">
+    <script src="../Global/jsFunctions.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
     <div id="bgBlur" onclick="ToggleSubMenu()"></div>
     <nav id="navbar">
-        <div id=navbar_buttonLeft onclick="Redirect('../login.php?logout=true')">
+                <div id="navbar_buttonLeft" onclick="logoutAndRedirect()">
             <img src="../Resources/null.png">
         </div>
         <div id="navbar_buttonCenter" onclick="Redirect('../baqme_homepage.php')">
             <img src="../Resources/BQ-Logo-text.png">
         </div>
-        <div id="navbar_buttonRight" onclick="ToggleSubMenu()">
-            <img src="../Resources/setting.svg">
-        </div>
+        <?php displayUserManagementButton($role); ?>
         <div id="subMenu">
             <div id="accounts">
                 <?php 
@@ -186,11 +208,19 @@ function AddAccountPass($gebruiker, $roles)
                 ?>
             </div>
         </div>
-        <div id="saveButton">
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
-                <button type='submit' name='saveChanges'>Opslaan</button>
-            </form>
-        </div>
+        
     </nav>
+    <script>
+function logoutAndRedirect() {
+    window.location.href = "login.php?logout=true";
+   
+}
+var url = window.location.href; 
+if(url.includes("navbar.php")){
+    window.location.href ="../Webpages/login.php";
+}
+
+</script>
+
 </body>
 </html>
