@@ -9,7 +9,7 @@ body, html{
     padding: 0;
     font-family: "Poppins", sans-serif;
     overflow: hidden;
-    background-image: url("Resources/plainBg.jpg");
+    background-image: url("../Resources/plainBg.jpg");
     background-size: cover;
 }
 
@@ -321,7 +321,7 @@ img{
     position: absolute;
     left: -9px;
     top: -6px;
-    background-image: url("./Resources/logout-static.gif");
+    background-image: url("../Resources/logout-static.gif");
     background-size: cover;
     filter: brightness(0) invert(1);
 }
@@ -332,7 +332,7 @@ img{
     position: absolute;
     left: -9px;
     top: -6px;
-    background-image: url("./Resources/logout.gif");
+    background-image: url("../Resources/logout.gif");
     background-size: cover;
     filter: brightness(0) invert(1);
 

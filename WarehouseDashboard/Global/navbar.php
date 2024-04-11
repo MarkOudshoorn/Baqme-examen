@@ -38,23 +38,23 @@
         </div>';
         $howManyAccounts++;
     }
-    
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../stylesheet.css">
-    <script src="jsFunctions.js"></script>
+    <link rel="stylesheet" href="../Global/stylesheet.css">
+    <script src="../Global/jsFunctions.js"></script>
     <title>Dashboard</title>
 </head>
 <div id="bgBlur" onclick="ToggleSubMenu()"></div>
 <nav id="navbar">
-    <div id=navbar_buttonLeft onclick="Redirect('../login.php?logout=true')">
+    <div id=navbar_buttonLeft onclick="Redirect('./login.php?logout=true')">
         <img src="../Resources/null.png">
     </div>
-    <div id="navbar_buttonCenter" onclick="Redirect('../baqme_homepage.php')">
+    <div id="navbar_buttonCenter" onclick="Redirect('./baqme_homepage.php')">
         <img src="../Resources/BQ-Logo-text.png">
     </div>
     <div id="navbar_buttonRight" onclick="ToggleSubMenu()">
@@ -71,7 +71,4 @@
         </div>
     </div>
 </nav>
-<body>
-<button style="width:500px; height:500px; background-color:red; margin-top:100px;">hello world!</button>
-</body>
 </html>

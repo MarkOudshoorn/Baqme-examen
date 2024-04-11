@@ -1,9 +1,10 @@
 <?php
+require_once("../Global/navbar.php");
 session_start();
 
 // Als de gebruiker niet is ingelogd, stuur ze naar de inlogpagina
 if (!isset($_SESSION['gebruiker_id'])) {
-    header("Location: login.php");
+    echo '<script>Redirect("login.php");</script';
     exit;
 }
 
