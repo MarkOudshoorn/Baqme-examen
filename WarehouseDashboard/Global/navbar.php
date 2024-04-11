@@ -144,24 +144,52 @@ function AddAccountPass($gebruiker, $roles)
             <img src="<?php echo $gebruiker->getProfilePicture(); ?>">
         </div>
         <div class="accountPass_details">
-            <?php echo $gebruiker->getGebruikersnaam(); ?><br>
-            <!-- Formulier voor het bijwerken van wachtwoord en rol -->
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
+            <div id="userData-<?php echo $howManyAccounts ?>">
+                <?php echo $gebruiker->getGebruikersnaam(); ?><br>
+                <?php echo $gebruiker->getRol(); ?>
+            </div>
+            <form id="editForm-<?php echo $howManyAccounts ?>" class="editForm-invis">
                 <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
+                <input type="text" readonly required="required" value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
                 <input type='password' name='newPassword' placeholder='Nieuw Wachtwoord' >
                 <select name='newRole'>
-    <?php foreach (['admin', 'user'] as $roleOption): ?>
-        <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
-    <?php endforeach; ?>
-</select>
-
-                <button type='submit' name='updateUser'>Wijzigingen Opslaan</button>
+                    <?php foreach (['admin', 'user'] as $roleOption): ?>
+                        <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
+                    <?php endforeach; ?>
+                </select>
             </form>
-            <!-- Formulier voor het verwijderen van een gebruiker -->
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
-                <input type='hidden' name='deleteUserId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <button type='submit' name='deleteUser'>Gebruiker Verwijderen</button>
-            </form>
+        </div>
+        <div>
+            <div class="accountPass_functionButton_column" id="accountPass_DeleteButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'appear');">
+                <img src="../Resources/delete.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 0; right: 30px"
+                id="accountPass_confirmDeleteButton_<?php echo $howManyAccounts; ?>">
+                <img src="../Resources/check.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 0; right: 0"
+                id="accountPass_cancelDeleteButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'disappear')">
+                <img src="../Resources/remove.svg">
+            </div>
+            <div class="accountPass_functionButton_column" style="top: 30px" id="accountPass_EditButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'appear'); 
+                AddOrRemoveItemToClassList_ID('remove', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                AddOrRemoveItemToClassList_ID('add', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                <img src="../Resources/edit.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 30px"
+                id="accountPass_confirmEditButton_<?php echo $howManyAccounts; ?>">
+                <img src="../Resources/save.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 0px"
+                id="accountPass_cancelEditButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'disappear'); 
+                AddOrRemoveItemToClassList_ID('remove', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                AddOrRemoveItemToClassList_ID('add', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                <img src="../Resources/remove.svg">
+            </div>
         </div>
     </div>
     <?php
@@ -207,7 +235,6 @@ function AddAccountPass($gebruiker, $roles)
                 }
                 ?>
             </div>
-            <button id="ibriButton">wasd</button>
         </div>
         
     </nav>

@@ -597,13 +597,12 @@ img{
     transition: 500ms;
 }
 
-#ibriButton{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    background-color: red;
-    width: 100px;
-    height: 100px;
+.editForm{
+    display: block;
+}
+
+.editForm-invis{
+    display: none;
 }
 
 /* #endregion accountsSubMenu */
