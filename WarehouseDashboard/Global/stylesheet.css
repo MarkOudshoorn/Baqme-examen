@@ -7,10 +7,8 @@ body, html{
     width: 100%;
     margin: 0;
     padding: 0;
+    background-color: rgb(32,34,37);
     font-family: "Poppins", sans-serif;
-    overflow: hidden;
-    background-image: url("Resources/plainBg.jpg");
-    background-size: cover;
 }
 
 img{
@@ -72,6 +70,8 @@ img{
     justify-content: center;
     align-items: center;
     color: white;
+    background-image: url("../Resources/plainBg.jpg");
+    background-size: cover;
 }
 
 #loginMenu_center{
@@ -296,14 +296,118 @@ img{
 
 /* #endregion login.php */
 
+/* #region baqme_homepage.php */
+#listsContainer {
+    margin-top: 75px;
+    border-color: wheat;
+    display: flex;
+    width: 100%;
+    color: black;
+    background-image: url("../Resources/plainBg.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.stad-list {
+    display: flex;
+    height: 50vh;
+    flex-wrap: wrap; /* Allow items to wrap to next line */
+}
+
+.listHeader-0{
+    background-color: rgb(41,43,47);
+    width: 200%;
+    height: 30px;
+    margin: 0;
+    font-size: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.listHeader-1{
+    background-color: rgb(47,49,54);
+    width: 100%;
+    height: 30px;
+    margin: 0;
+    font-size: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.listHeader-2{
+    background-color: rgb(51, 54, 63);
+    width: 100%;
+    height: 30px;
+    margin-top: 30px;
+    font-size: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.warehouse-list, .togo-list {
+    flex-basis: 100%;
+    /* padding: 5px; */
+}
+
+.fiets-container{
+    width: 100%;
+    background-color: rgb(82,224,193);
+    margin-top: 10px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+.subHeader {
+    color: black;
+    font-size: 0.8em;
+}
+
+.issue{
+    background-color: rgb(35, 171, 142);
+    font-size: smaller;
+    padding: 5px;
+}
+
+.JRIssues{
+    padding: 5px;
+    background-color: rgb(82,224,193);
+    width: 100%;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 10px;
+}
+
+
+/* #endregion baqme_homepage.php */
+
 
 /* #region navbar.php */
 #navbar {
-    z-index: 2;
+    z-index: 1;
     position: fixed;
+    top: 0;
     width: 100%;
     height: 75px;
-    background-color: rgb(30,33,36);
+    background-color: rgb(32,34,37);
 }
 
 #navbar_buttonLeft{
@@ -321,7 +425,7 @@ img{
     position: absolute;
     left: -9px;
     top: -6px;
-    background-image: url("./Resources/logout-static.gif");
+    background-image: url("../Resources/logout-static.gif");
     background-size: cover;
     filter: brightness(0) invert(1);
 }
@@ -332,7 +436,7 @@ img{
     position: absolute;
     left: -9px;
     top: -6px;
-    background-image: url("./Resources/logout.gif");
+    background-image: url("../Resources/logout.gif");
     background-size: cover;
     filter: brightness(0) invert(1);
 
@@ -380,9 +484,10 @@ img{
 /* #region accountsSubMenu */
 
 .blur {
+    z-index: 0;
     width: 110vw;
     height: 100vh;
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     backdrop-filter: blur(10px);
@@ -391,9 +496,10 @@ img{
 
 
 .noblur {
+    z-index: 0;
     width: 110vw;
     height: 100vh;
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     backdrop-filter: blur(0);
@@ -402,19 +508,19 @@ img{
 }
 
 #subMenu{
-    z-index: 1;
+    z-index: 2;
     background-color: rgb(40,43,48);
     position: fixed;
-    top: 10vh;
+    top: 0;
     right: -500px;
-    height: 200vh;
+    height: 100vh;
     transition: right 0.3s ease;
 }
 
 #accounts{
     overflow-y: scroll;
     width: 420px;
-    height: 90vh;
+    height: 100vh;
     outline: none;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -425,7 +531,7 @@ img{
     width: 350px;
     display: inline-flex;
     margin: 15px 0 15px 33px;
-    background-color: rgb(114, 137, 218);
+    background-color: rgb(82,224,193);
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
@@ -438,19 +544,19 @@ img{
     height: 100px;
     border-right: 2px solid black;
     box-sizing: border-box;
-    background-color: rgb(95, 115, 190);
+    background-color: rgb(35, 171, 142);
 }
 
 .accountPass_details{
     padding: 10px;
     width: 300px;
     height: 100px;
-    background-color: rgb(114, 137, 218);
+    background-color: rgb(82,224,193);
 }
 
 
 .accountPass_functionButton_row{
-    background-color: rgb(114, 137, 218);
+    background-color: rgb(82,224,193);
     width: 30px;
     height: 30px;
     border-radius: 5px;
@@ -461,7 +567,7 @@ img{
 }
 
 .accountPass_functionButton_column{
-    background-color: rgb(114, 137, 218);
+    background-color: rgb(82,224,193);
     width: 30px;
     height: 30px;
     margin-bottom: 5px;
@@ -469,6 +575,10 @@ img{
     display: flex;
     position: absolute;
     right: 0;
+}
+
+.accountPass_options{
+    background-color: rgb(82,224,193);
 }
 
 .accountPass_functionButton_hidden{
@@ -485,6 +595,14 @@ img{
     border-radius: 25px;
     background-color: rgb(71, 83, 178);
     transition: 500ms;
+}
+
+.editForm{
+    display: block;
+}
+
+.editForm-invis{
+    display: none;
 }
 
 /* #endregion accountsSubMenu */

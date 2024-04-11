@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let isOpen = false;
 
+function Redirect(link)
+{
+    window.location.href = link;
+}
+
 function ToggleSubMenu() {
     isOpen = !isOpen; // Toggle the state
     if (isOpen) {
