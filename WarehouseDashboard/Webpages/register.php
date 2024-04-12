@@ -1,24 +1,21 @@
 <?php
 session_start();
-
+// voor vieligheid met URL: als de gebruikers niet ingelogt stuur naar login.php om in te logen
 if(!isset($_SESSION['loggedInGebruiker']))
 {
     header("location: login.php");
 }
-
 require_once "../Global/DBconnect.php";
 global $db;
-
+//zet nu de fout mendingen null nu dan kan je displayen als heb
 $foutmelding = null;
-
 if($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ontvang gegevens van het registratieformulier
+    //dit zijn de gegevens van het registratieformulier
     $gebruikersnaam = htmlspecialchars($_POST['gebruikersnaam']);
     $wachtwoord = htmlspecialchars($_POST['wachtwoord']);
     $bevestig_wachtwoord = htmlspecialchars($_POST['bevestig_wachtwoord']);
-    $rol = htmlspecialchars($_POST['rol']); // Ontvang de geselecteerde rol
-
-           // Valideer het e-mailformaat voor gebruikersnaam
+    $rol = htmlspecialchars($_POST['rol']);
+           //dit is soort filtter om de user informiren dat moet goed gegevens intypen
         if (!filter_var($gebruikersnaam, FILTER_VALIDATE_EMAIL)) {
             $foutmelding = "Voer alstublieft een geldig e-mailadres";
         } elseif (empty($wachtwoord) || empty($bevestig_wachtwoord)) {
@@ -27,34 +24,29 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $foutmelding = "Wachtwoorden komen niet overeen.";
         } else {
             try {
-                // Bereid de SQL-statement voor om gebruiker toe te voegen aan de database
+                //als de user gegevens klopt is opslaan in de database
                 $sql = "INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol) VALUES (:gebruikersnaam, :wachtwoord, :rol)";
                 $stmt = $db->pdo->prepare($sql);
-
-                // Hash het wachtwoord
+                //hashing van het wachtwoord
                 $hashed_wachtwoord = password_hash($wachtwoord, PASSWORD_DEFAULT);
-        
-                // Bind variabelen aan de voorbereide verklaring als parameters
+                //voorbereide verklaring als parameters
                 $stmt->bindValue(':gebruikersnaam', $gebruikersnaam, PDO::PARAM_STR);
                 $stmt->bindValue(':wachtwoord', $hashed_wachtwoord, PDO::PARAM_STR);
                 $stmt->bindValue(':rol', $rol, PDO::PARAM_STR);
-        
-                // Voer de voorbereide verklaring uit om de gebruiker toe te voegen
                 if($stmt->execute()) {
-                    // Doorstuur de gebruiker naar de inlogpagina
+                    //stuur gebruiker naar de inlogpagina
                     header("Location: dashboard.php");
                     exit();
                 } else {
-                    // Foutmelding als het niet mogelijk is om de query uit te voeren
+                    //als er iets mis gaat geef dit melding
                     $foutmelding = "Er is iets misgegaan. Probeer het later opnieuw.";
                 }
             } catch (PDOException $e) {
-                // Foutmelding als er een fout optreedt bij het uitvoeren van de query
+                //en als iets fout gaat met data verbinding geef dit melding
                 echo "Oops! Er ging iets mis: " . $e->getMessage();
             }
         }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -77,6 +69,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2>Registreren</h2>
             </div>
         </div>
+            <!--dit line's de div s zijn voor  de style ALLEEN -->
         <div id="loginMenu_content">
             <div id="loginMenu_content_flair">
                 <div id="LineContainer_1">
@@ -117,6 +110,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
         <?php
+        //hier is de plek waar ik wil de foutmelding zien
         if(isset($foutmelding)) {
             echo '<div class="errorBox">' . $foutmelding . '</div>';
         }
