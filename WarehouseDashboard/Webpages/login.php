@@ -1,27 +1,22 @@
 <?php
 session_start();
 
-// Uitlogfunctionaliteit
+//als de gebruikers niet ingelogt stuur naar login.php om in te logen
 if (isset($_GET['logout'])) {
-    // Vernietig de sessie
     session_unset();
     session_destroy();
-    // Stuur de gebruiker door naar de inlogpagina
     header("Location: login.php");
     exit;
 }
-
-// Als de gebruiker al is ingelogd, stuur ze door naar de startpagina
+//als de user al ingelogt dan stuur de gebruikers naar dashboard.php
 if(isset($_SESSION['loggedInGebruiker'])) {
     header("Location: dashboard.php");
     exit;
 }
-
 require_once "../Classes/gebruikers.php";
 require_once "../Global/DBconnect.php";
 global $db;
-
-
+//als nog niet ingelogt is,de variabelen zijn nu null voor controleren
 $foutmelding = null;
 $gebruikersnaam = null;
 $wachtwoord = null;
@@ -32,46 +27,33 @@ if(isset($_POST["wachtwoord"]) && $_POST["wachtwoord"] != null)
     $wachtwoord = $_POST["wachtwoord"];
 
 
-if($gebruikersnaam && $wachtwoord)
-{
-    // Query om te controleren of de gebruiker bestaat in de database
+if($gebruikersnaam && $wachtwoord){
+    //query om te controleren of de gebruiker bestaat in de database
     $query = "SELECT * FROM gebruikers WHERE gebruikersnaam = ?";
-
     try {
-        // Bereid de SQL-statement voor
         $stmt = $db->pdo->prepare($query);
-        
-        // Bind parameters
         $stmt->bindParam(1, $gebruikersnaam, PDO::PARAM_STR);
-        
-        // Voer de statement uit
         $stmt->execute();
-        
-        // Haal resultaten op
+        //haal resultaten op
         $gebruiker = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        // Controleer of de gebruiker bestaat en of het wachtwoord klopt
+        //heir check of de gebruiker bestaat en of het wachtwoord klopt is
         if($gebruiker && password_verify($wachtwoord, $gebruiker['wachtwoord'])) {
             $_SESSION["loggedInGebruiker"] = new Gebruiker($gebruiker['gebruiker_id'], $gebruiker['gebruikersnaam'], 
                                                         $gebruiker['wachtwoord'], $gebruiker['rol'], $gebruiker['created_at'],
                                                         $gebruiker['profilepicture']);
-
-            // Doorstuur de gebruiker naar de startpagina
             header("Location: dashboard.php");
             exit;
         } else {
-            // Foutmelding als gebruikersnaam of wachtwoord onjuist is
+            //als gebruikersnaam of wachtwoord onjuist is geeft foutmelding dat:
             $foutmelding = "Ongeldige gebruikersnaam of wachtwoord.";
         }
     } catch(PDOException $e) {
-        // Foutmelding als er een fout optreedt bij het uitvoeren van de query
+        //als er andere problemen zijn met database geeft dit foutmelding:
         echo "Oops! Er ging iets mis: " . $e->getMessage();
     }
 }
-
 ?>
-
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -92,6 +74,7 @@ if($gebruikersnaam && $wachtwoord)
             <h2>Dashboard</h2>
         </div>
     </div>
+    <!--dit line's de div s zijn voor  de style ALLEEN -->
     <div id="loginMenu_content">
         <div id="loginMenu_content_flair">
             <div id="LineContainer_1">
@@ -122,6 +105,7 @@ if($gebruikersnaam && $wachtwoord)
     </div>
     
     <?php 
+    //hier is de plek waar ik wil de foutmelding zien
         if($foutmelding != null)
         {
             echo '<div class="errorBox">' . $foutmelding . '</div>';

@@ -1,27 +1,20 @@
 <?php
 require_once("../Global/navbar.php");
-
-
-// Als de gebruiker niet is ingelogd, stuur ze naar de inlogpagina
+//als de gebruikers niet ingelogt stuur naar login.php om in te logen
 if (!isset($_SESSION['loggedInGebruiker'])) {
     echo '<script>Redirect("login.php");</script>';
     exit;
 }
-
 require_once "../Classes/vehicles.php";
 require_once "../Classes/joyride.php";
 require_once "../Classes/wh-issues.php";
 require_once "../Classes/open-issues.php";
 require_once "../Global/DBconnect.php"; // Inclusief het bestand voor databaseverbinding
 global $db;
-
-
-// Steden ophalen uit de database met behulp van de PDO-verbinding
-$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''"); // Alle fleets ophalen, inclusief lege
+//hier ophalen de steden uit de database met behulp van de PDO-verbinding en ook als geen stad heb haalt ook
+$stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''");
 $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
 ?>
-
 <body>
  <div id="listsContainer">
     <?php foreach ($steden as $stad) : ?>
@@ -30,7 +23,7 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
         <div class="listHeader-0" >
         <?php
-        // Query voor de "To-do" lijsten
+        //query voor de fietsen die moet nog gemaakt worden uit de database
         $fietsen_warehouse = Query_warehouse($stad);
         ?>
         <div class="warehouse-list">
@@ -62,7 +55,7 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
         </div>
 
         <?php
-        // Query voor de "Ready" lijsten
+        //query voor fietsen die zijn klaar uit de database
         $fietsen_klaar = Query_done($stad);
         ?>
         <div class="togo-list">
@@ -94,16 +87,13 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
         </div>
         </div>
         </div>
-    <?php endforeach; ?>
-    
+    <?php endforeach; ?>   
 </div>
-
 </body>
 </html>
-
 <?php
-
 function Query_warehouse($stad) //heb het in een function gedaan zodat de html wat overzichtelijker was -mark
+// de structuur hoe de data uit de tabelen in database halen 
 {
     global $db;
     $stmt_warehouse = $db->pdo->prepare("
@@ -119,7 +109,6 @@ function Query_warehouse($stad) //heb het in een function gedaan zodat de html w
     $stmt_warehouse->execute([$stad]);
     return $stmt_warehouse->fetchAll(PDO::FETCH_ASSOC);
 }
-
 function Query_done($stad)
 {
     global $db;
