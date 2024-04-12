@@ -1,11 +1,15 @@
 <?php
 session_start();
 
+if(!isset($_SESSION['loggedInGebruiker']))
+{
+    header("location: login.php");
+}
 
 require_once "../Global/DBconnect.php";
 global $db;
 
-$foutmelding = "";
+$foutmelding = null;
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ontvang gegevens van het registratieformulier
@@ -38,7 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Voer de voorbereide verklaring uit om de gebruiker toe te voegen
                 if($stmt->execute()) {
                     // Doorstuur de gebruiker naar de inlogpagina
-                    header("Location: login.php");
+                    header("Location: dashboard.php");
                     exit();
                 } else {
                     // Foutmelding als het niet mogelijk is om de query uit te voeren
@@ -49,7 +53,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Oops! Er ging iets mis: " . $e->getMessage();
             }
         }
-
 }
 
 ?>
@@ -71,7 +74,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img id="loginMenu_BQLogo_img" src="../Resources/BQ-Logo.png">
             </div>
             <div id="loginMenu_BQLogoText">
-                <h2>Dashboard</h2>
+                <h2>Registreren</h2>
             </div>
         </div>
         <div id="loginMenu_content">
