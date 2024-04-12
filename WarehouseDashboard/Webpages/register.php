@@ -42,7 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Voer de voorbereide verklaring uit om de gebruiker toe te voegen
                 if($stmt->execute()) {
                     // Doorstuur de gebruiker naar de inlogpagina
-                    header("Location: login.php");
+                    header("Location: dashboard.php");
                     exit();
                 } else {
                     // Foutmelding als het niet mogelijk is om de query uit te voeren

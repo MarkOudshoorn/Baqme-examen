@@ -11,6 +11,11 @@ function hashPassword($password) {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
+if(!isset($_SESSION['loggedInGebruiker']))
+{
+    header("location: login.php");
+}
+
 // Haal de beschikbare rollen op uit de database
 $roles = [];
 $stmt = $db->pdo->query("SELECT DISTINCT rol FROM gebruikers");
@@ -147,18 +152,14 @@ function AddAccountPass($gebruiker, $roles)
     <div class="accountPass">
        <div class="accountPass_pfp">
     <?php 
-    $profilePicture = $gebruiker->getProfilePicture();
+    $profilePicture = $gebruiker->GetProfilePicture();
     if (!empty($profilePicture)) {
         echo '<img src="data:image/jpeg;base64,'.base64_encode($profilePicture).'">';
     } else {
-        echo '<img src="placeholder.jpg" alt="Profielfoto">';
+        echo '<img src="../Resources/user.svg" alt="Profielfoto">';
     }
-
-
-   
     ?>
-</div>
-
+    </div>
         <div class="accountPass_details">
             <div id="userData-<?php echo $howManyAccounts ?>">
                 <?php echo $gebruiker->getGebruikersnaam(); ?><br>
@@ -259,35 +260,6 @@ function AddAccountPass($gebruiker, $roles)
     <script src="../Global/jsFunctions.js"></script>
     <title>Dashboard</title>
 </head>
-<style>
-.time_navbar{
-        width: 100%;
-    height: 30px;
-    background-color: rgb(39 57 56);
-    display: flex;
-}
-#navbar_clock{
-    font-size: x-large;
-    font-family: fantasy;
-    color: white;
-}
-#navbar_timer{
-       font-size: x-large;
-    font-family: monospace;
-    color: white;
-    position: absolute;
-    right: 50%;
-    left: 50%;
-    width: 200px;
-}
-#navbar_user_info{
-    font-size: x-large;
-    font-family: monospace;
-    color: white;
-    right: 0;
-    position: absolute;
-}
-</style>
 <body>
 <div id="bgBlur" onclick="ToggleSubMenu()"></div>
     <nav id="navbar">
@@ -325,12 +297,10 @@ function AddAccountPass($gebruiker, $roles)
             </div>
         </div>
         <div class="time_navbar">
-          <div id="navbar_clock"></div>
-     <div id="navbar_timer"></div>
-      <div id="navbar_user_info">
-            <?php 
-            echo "Welkom  " . $_SESSION['loggedInGebruiker']->GetGebruikersnaam(); 
-            ?>
+            <div id="navbar_clock"></div>
+        <div id="navbar_timer"></div>
+        <div id="navbar_user_info">
+            <?php echo "Welkom  " . $_SESSION['loggedInGebruiker']->GetGebruikersnaam(); ?>
         </div>
         </div>
     </nav>

@@ -45,7 +45,7 @@ class Gebruiker
     public function GetProfilePicture()
     {
         if($this->profilepicture == null || $this->profilepicture == "")
-            return "../Resources/user.svg";
+            return null;
         else
             return $this->profilepicture;
     }
