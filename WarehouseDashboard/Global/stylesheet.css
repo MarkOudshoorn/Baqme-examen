@@ -7,6 +7,7 @@ body, html{
     width: 100%;
     margin: 0;
     padding: 0;
+    background-color: rgb(32,34,37);
     font-family: "Poppins", sans-serif;
 }
 
@@ -298,13 +299,17 @@ img{
 /* #region baqme_homepage.php */
 #listsContainer {
     margin-top: 100px;
-    border-color: wheat;
     display: flex;
     width: 100%;
     color: black;
     background-image: url("../Resources/plainBg.jpg");
     background-size: cover;
     background-attachment: fixed;
+    align-content: normal;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
 }
 
 .stad-list {
@@ -313,9 +318,15 @@ img{
     flex-wrap: wrap; /* Allow items to wrap to next line */
 }
 
+.city-list{
+    display: inline;
+    width: auto;
+    flex: 1 1 0;
+}
+
 .listHeader-0{
     background-color: rgb(41,43,47);
-    width: 200%;
+    width: 100%;
     height: 30px;
     margin: 0;
     font-size: 20px;
@@ -329,7 +340,7 @@ img{
 
 .listHeader-1{
     background-color: rgb(47,49,54);
-    width: 100%;
+    width: 50%;
     height: 30px;
     margin: 0;
     font-size: 20px;
@@ -343,9 +354,9 @@ img{
 
 .listHeader-2{
     background-color: rgb(51, 54, 63);
-    width: 100%;
+    width: 50%;
     height: 30px;
-    margin-top: 30px;
+    margin: 0;
     font-size: 20px;
     color: white;
     display: flex;
@@ -355,18 +366,30 @@ img{
     padding: 5px;
 }
 
-.warehouse-list, .togo-list {
-    flex-basis: 100%;
-    /* padding: 5px; */
+.listHeaders{
+    width: 100%;
+}
+
+.listSubheader{
+    display: flex;
+    width: 100%;
+}
+
+.todo-list {
+    width: 50%;
+}
+
+.ready-list{
+    width: 50%;
 }
 
 .fiets-container{
-    width: 100%;
     margin-top: 10px;
     background-image: linear-gradient(180deg, rgb(82,224,193), rgb(176, 244, 230));
     border-radius: 10px;
-    display: inline-block;
 }
+
+
 
 .issue-header {
     display: flex;
@@ -440,7 +463,7 @@ img{
 
 #navbar_buttonCenter{
     display: inline-block;
-    width: auto;
+    width: 200px;
     height: 50px;
     margin-top: 16px;
     margin-left: calc(50vw - 150px);
@@ -542,7 +565,7 @@ img{
     position: fixed;
     top: 0;
     right: -500px;
-    height: 100%;
+    height: 100vh;
     transition: right 0.3s ease;
 }
 
@@ -551,7 +574,7 @@ img{
     flex-wrap: wrap;
     justify-content: flex-end;
     width: 420px;
-    height: 70px;
+    height: 75px;
     background-color: rgb(30, 32, 34);
     
 }

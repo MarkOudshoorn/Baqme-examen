@@ -338,7 +338,7 @@ if(url.includes("navbar.php")){
         }
 
         // Start de timer
-        updateTimer();
+        //updateTimer();
          // Klokfunctie om de huidige tijd weer te geven
         function updateClock() {
             var now = new Date(); // Huidige datum en tijd
@@ -355,7 +355,7 @@ if(url.includes("navbar.php")){
         }
 
         // Start de klok wanneer de pagina geladen is
-        updateClock();
+        //updateClock();
 </script>
 
 </body>
