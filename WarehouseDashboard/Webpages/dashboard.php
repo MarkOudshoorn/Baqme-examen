@@ -52,8 +52,9 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
                                     if($trimmed != "")
                                         echo '<div class="issue">' . $trimmed . '</div>'; ?>
                                 <?php endforeach; ?>
+                                <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
                             </div>
-                            <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
+                            
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -65,23 +66,28 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
                 <div class="togo-list">
                     <h2 class="listHeader-2">Ready</h2>
                     <?php foreach ($fietsen_klaar as $fiets) : ?>
-                        <div class="fiets-container">
-                        <div style="font-weight: bold;"><?= $fiets['title'], $fiets['vehicletype'] ?></div><
-
-                            <?php
+                        <?php
                             $open_issues = explode(',', $fiets['open_issues']);
                             $wh_issues = explode(',', $fiets['wh_issues']);
-                            ?>
+                        ?>
+                        <div class="fiets-container">
+                            <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
                             <div class="issues-container">
                                 <?php foreach ($open_issues as $issue) : ?>
-                                    <div class="issue"><?php echo "-", trim($issue); ?></div>
+                                    <?php $trimmed = trim($issue); 
+                                    if($trimmed != "")
+                                        echo '<div class="issue">' . $trimmed . '</div>'; ?>
+
                                 <?php endforeach; ?>
 
                                 <?php foreach ($wh_issues as $issue) : ?>
-                                    <div class="issue"><?php echo "-", trim($issue); ?></div>
+                                    <?php $trimmed = trim($issue); 
+                                    if($trimmed != "")
+                                        echo '<div class="issue">' . $trimmed . '</div>'; ?>
                                 <?php endforeach; ?>
+                                <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
                             </div>
-                            <div class="JRIssues">wasd <?= $fiets["joyride_status"] ?> </div>
+                            
                         </div>
                     <?php endforeach; ?>
                 </div>
