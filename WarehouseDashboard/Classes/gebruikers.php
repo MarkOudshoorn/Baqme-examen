@@ -1,7 +1,7 @@
 <?php
 class Gebruiker
 {
-       private $gebruiker_id;
+    private $gebruiker_id;
     private $gebruikersnaam;
     private $wachtwoord;
     private $rol;
@@ -19,62 +19,62 @@ class Gebruiker
     }
 
     // Getters
-    public function getGebruikerId()
+    public function GetGebruikerId()
     {
         return $this->gebruiker_id;
     }
 
-    public function getGebruikersnaam()
+    public function GetGebruikersnaam()
     {
         return $this->gebruikersnaam;
     }
 
-    public function getWachtwoord()
+    public function GetWachtwoord()
     {
         return $this->wachtwoord;
     }
 
-    public function getRol()
+    public function GetRol()
     {
         return $this->rol;
     }
-    public function getCreatedAt()
+    public function GetCreatedAt()
     {
         return $this->created_at;
     }
-    public function getProfilePicture()
+    public function GetProfilePicture()
     {
         if($this->profilepicture == null || $this->profilepicture == "")
-            return "../Resources/user.svg";
+            return null;
         else
             return $this->profilepicture;
     }
 
     // Setters
-    public function setGebruikerId($gebruiker_id)
+    public function SetGebruikerId($gebruiker_id)
     {
         $this->gebruiker_id = $gebruiker_id;
     }
 
-    public function setGebruikersnaam($gebruikersnaam)
+    public function SetGebruikersnaam($gebruikersnaam)
     {
         $this->gebruikersnaam = $gebruikersnaam;
     }
 
-    public function setWachtwoord($wachtwoord)
+    public function SetWachtwoord($wachtwoord)
     {
         $this->wachtwoord = $wachtwoord;
     }
 
-    public function setRol($rol)
+    public function SetRol($rol)
     {
         $this->rol = $rol;
     }
-     public function setCreatedAt($created_at)
+     public function SetCreatedAt($created_at)
     {
         $this->created_at = $created_at;
     }
-    public function setProfilePicture($profilepicture)
+    public function SetProfilePicture($profilepicture)
     {
         $this->profilepicture = $profilepicture;
     }

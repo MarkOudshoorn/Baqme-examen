@@ -1,8 +1,11 @@
 function Redirect(link)
 {
     window.location.href = link;
-}
+} //helper functie om makkelijker te kunnen redirecten
 
+
+//obtain de elementen om de blur te displayen op de correcte momenten
+//en om het goede menu te verplaatsen
 var subMenu = null;
 var bgBlur = null;
 document.addEventListener("DOMContentLoaded", function() {
@@ -10,13 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
     bgBlur = document.getElementById("bgBlur");
 });
 
-let isOpen = false;
+let isOpen = false; //initiate het menu als false
 
-function Redirect(link)
-{
-    window.location.href = link;
-}
 
+//wordt aangeroepen zodra de gebruiker het submenu wilt openen (in de navbar)
 function ToggleSubMenu() {
     isOpen = !isOpen; // Toggle the state
     if (isOpen) {
@@ -30,6 +30,7 @@ function ToggleSubMenu() {
     }
 }
 
+//helper function voor het adden en removen van classes
 function AddOrRemoveItemToClassList_ID(addOrRemove, element, className)
 {
     if(addOrRemove == "add")
@@ -38,9 +39,7 @@ function AddOrRemoveItemToClassList_ID(addOrRemove, element, className)
         document.getElementById(element).classList.remove(className);
 }
 
-//this code is crap
-//but I'm way too lazy to remake it with arrays and loops
-//besides, nobody will see it anyway -mark
+//Zeer slechte code om bepaalde elementen te hiden en te displayen (wordt gebruikt voor de edit/delete knoppen in de navbar's submenu)
 function ToggleSubmenuButtons(type, number, appearOrDisappear)
 {
     if(appearOrDisappear == "appear")
@@ -55,7 +54,6 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
         }
         else
         {
-            console.log("edit");
             AddOrRemoveItemToClassList_ID("add", "accountPass_EditButton_" + number, "accountPass_functionButton_hidden");
             AddOrRemoveItemToClassList_ID("add", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");
@@ -73,7 +71,6 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelDeleteButton_" + number, "accountPass_functionButton_hidden");        }
         else
         {
-            console.log("edit");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_EditButton_" + number, "accountPass_functionButton_hidden");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");

@@ -1,68 +1,127 @@
 <?php
-
-
 require_once 'DBconnect.php'; 
 require_once '../Classes/gebruikers.php'; 
+//require de basics
 
-$howManyAccounts = 0;
+session_start();
 
 // Functie om wachtwoord te hashen
 function hashPassword($password) {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
-// Haal de beschikbare rollen op uit de database
-$roles = [];
-$stmt = $db->pdo->query("SELECT DISTINCT rol FROM gebruikers");
-if ($stmt) {
-    while($row = $stmt->fetch()) {
-        $roles[] = $row['rol'];
-    }
-}
-// Controleer of de gebruiker is ingelogd en haal de rol op uit de database
-function checkUserRole($db) {
-    // Controleer of de gebruiker is ingelogd
-    if (isset($_SESSION['gebruiker_id'])) {
-        // Haal de gebruikersrol op uit de database
-        $gebruiker_id = $_SESSION['gebruiker_id'];
-        $stmt = $db->pdo->prepare("SELECT rol FROM gebruikers WHERE gebruiker_id = :gebruiker_id");
-        $stmt->bindParam(':gebruiker_id', $gebruiker_id);
-        if ($stmt->execute()) {
-            $row = $stmt->fetch();
-            if ($row) {
-                return $row['rol']; // Geef de rol terug
-            }
-        }
-    }
-    return 'user'; // Standaardrol als de gebruiker niet is ingelogd of als er een fout optreedt
+if(!isset($_SESSION['loggedInGebruiker']))
+{
+    header("location: login.php");
 }
 
-// Functie om de knop voor het beheren van gebruikers weer te geven op basis van de gebruikersrol
-function displayUserManagementButton($role) {
-    if ($role === 'admin') {
+//haal alle rollen op uit de database om deze in een dropdown te laten zien
+function GetAllRoles($db)
+{
+    $roles = [];
+    $stmt = $db->pdo->query("SELECT DISTINCT rol FROM gebruikers");
+    if ($stmt) {
+        while($row = $stmt->fetch()) {
+            $roles[] = $row['rol'];
+        }
+    }
+    return $roles;
+}
+
+//helper functie om te kijken of een bepaalt element geladen moet worden
+//hangt af van de role van het account
+function displayUserManagementButton() {
+    global $db;
+    $gebruiker = $_SESSION["loggedInGebruiker"];
+    $rol = $gebruiker->GetRol();
+    if ($gebruiker->GetRol() === 'admin') {
         echo '<div id="navbar_buttonRight" onclick="ToggleSubMenu()">';
         echo '<img src="../Resources/setting.svg">';
         echo '</div>';
+        echo '<div id="subMenu">
+            <div id="submenuOptions">
+                <button class="submenu_options_button" onclick="location.href=\'../Webpages/register.php\'";>
+                    <img class="submenu_option_button_image" src="../Resources/user-add.svg">
+                </button>
+            </div>
+            <div id="accounts">';
+
+        $stmt = $db->pdo->query("SELECT * FROM gebruikers");
+
+        if ($stmt) {
+            while($row = $stmt->fetch()) {
+                $gebruiker = new Gebruiker($row["gebruiker_id"], $row["gebruikersnaam"], $row["wachtwoord"], $row["rol"], $row["created_at"], $row["profilepicture"]);
+                AddAccountPass($gebruiker, GetAllRoles($db));
+            }
+        } else {
+            echo "Geen gebruikers gevonden.";
+        }
+
+        echo '</div>
+        </div>';
+
     }
 }
 
-// Controleer de gebruikersrol en toon de knop indien nodig
-$role = checkUserRole($db);
 
-// Check of een POST-verzoek is verzonden om wachtwoord bij te werken
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updatePassword'])) {
+//helper functie om het password te verifyen met die van de database
+//deze wordt gebruikt om te kijken of het password dat ingevoert is anders is dan
+//degene in de database.
+function CheckForUpdatedPw($password)
+{
+    if(isset($_SESSION["loggedInGebruiker"]))
+    {
+        $loggedInUser = $_SESSION["loggedInGebruiker"];
+        if(password_verify($password, $loggedInUser->getWachtwoord()) || $password == "")
+            return "old";
+        else
+            return "new";
+    }
+    else
+    {
+        echo "<script>console.log('Not logged in')</script>";
+    }
+}
+
+//if-statements om te kijken of we van een redirect kwamen waar een formulier ingevult was
+//zo ja, waren alle gegevens ingevult en correct? pas dan de database aan op de gebruiker's request
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $accountId = $_POST['accountId'];
-    $newPassword = hashPassword($_POST['newPassword']); // Hash het nieuwe wachtwoord
-
+    $newPassword = $_POST['password'];
+    $oldPassword = $_SESSION["loggedInGebruiker"]->getWachtwoord();
+    $newGebruikersnaam = $_POST["gebruikersnaam"];
+    $newRol = $_POST["rol"];
+    $newUpdated = "1";
+    $datetime = Date("Y-m-d h:i:s");
+    $newPfp = null;
+    $isNewPw = CheckForUpdatedPw($newPassword); //checken of het wachtwoord geupdate is
     try {
-        $stmt = $db->pdo->prepare("UPDATE gebruikers SET wachtwoord = :newPassword WHERE gebruiker_id = :accountId");
-        $stmt->bindParam(':newPassword', $newPassword);
+        $stmt = $db->pdo->prepare("UPDATE gebruikers SET wachtwoord = :newPassword, 
+                                            gebruikersnaam = :newGebruikersnaam,
+                                            rol = :newRol,
+                                            created_at = :newCreated_at,
+                                            updated = :newUpdated,
+                                            profilepicture = :newProfilepicture
+                                            WHERE gebruiker_id = :accountId");
+
+        if ($isNewPw == "new") { //als het wachtwoord nieuw is moet deze nog gehashed worden
+            $newPasswordHashed = password_hash($newPassword, PASSWORD_DEFAULT);
+            $stmt->bindParam(':newPassword', $newPasswordHashed);
+        } else {
+            $stmt->bindParam(':newPassword', $oldPassword); //het oude wachtwoord was binnen gekomen als een hash, geen hash meer nodig
+        }
+
+        $stmt->bindParam(":newGebruikersnaam", $newGebruikersnaam);
+        $stmt->bindParam(":newRol", $newRol);
+        $stmt->bindParam(":newCreated_at", $datetime);
+        $stmt->bindParam(":newUpdated", $newUpdated);
+        $stmt->bindParam(":newProfilepicture", $newPfp);
+
         $stmt->bindParam(':accountId', $accountId);
         if ($stmt->execute()) {
-            echo "Wachtwoord succesvol bijgewerkt.";
+            echo "<script>console.log('Account updated')</script>"; //vooral voor debugging, maar het kan geen kwaad om deze erin te laten
         } else {
-            echo "Er is een fout opgetreden bij het bijwerken van het wachtwoord.";
-            // Debugging: Voeg een regel toe om de query te bekijken die wordt uitgevoerd
+            echo "<script>console.log('Error')</script>";
             echo "Query: " . $stmt->queryString;
         }
     } catch (PDOException $e) {
@@ -70,134 +129,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updatePassword'])) {
     }
 }
 
-// Check of een POST-verzoek is verzonden om een gebruiker te verwijderen
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['deleteUser'])) {
-    $deleteUserId = $_POST['deleteUserId'];
-
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
+    $accountId = $_POST['accountId'];
     try {
         $stmt = $db->pdo->prepare("DELETE FROM gebruikers WHERE gebruiker_id = :deleteUserId");
-        $stmt->bindParam(':deleteUserId', $deleteUserId);
+        $stmt->bindParam(':deleteUserId', $accountId);
         if ($stmt->execute()) {
-            echo "Gebruiker succesvol verwijderd.";
+            echo "<script>console.log('account deleted')</script>";
         } else {
-            echo "Er is een fout opgetreden bij het verwijderen van de gebruiker.";
-            // Debugging: Voeg een regel toe om de query te bekijken die wordt uitgevoerd
+            echo "<script>console.log('error')</script>";
             echo "Query: " . $stmt->queryString;
         }
     } catch (PDOException $e) {
+        echo "<script>console.log('error')</script>";
         echo "Fout bij het verwijderen van de gebruiker: " . $e->getMessage();
     }
 }
 
-// Check of een POST-verzoek is verzonden om de rol bij te werken
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateRole'])) {
-    $accountId = $_POST['accountId'];
-    $newRole = $_POST['newRole'];
-
-    try {
-        $stmt = $db->pdo->prepare("UPDATE gebruikers SET rol = :newRole WHERE gebruiker_id = :accountId");
-        $stmt->bindParam(':newRole', $newRole);
-        $stmt->bindParam(':accountId', $accountId);
-        if ($stmt->execute()) {
-            echo "Rol succesvol bijgewerkt.";
-        } else {
-            echo "Er is een fout opgetreden bij het bijwerken van de rol.";
-            // Debugging: Voeg een regel toe om de query te bekijken die wordt uitgevoerd
-            echo "Query: " . $stmt->queryString;
-        }
-    } catch (PDOException $e) {
-        echo "Fout bij het bijwerken van de rol: " . $e->getMessage();
-    }
-}
-
-// Check of een POST-verzoek is verzonden om een gebruiker bij te werken
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateUser'])) {
-    $accountId = $_POST['accountId'];
-    $newPassword = hashPassword($_POST['newPassword']); // Hash het nieuwe wachtwoord
-    $newRole = $_POST['newRole'];
-
-    try {
-        $stmt = $db->pdo->prepare("UPDATE gebruikers SET wachtwoord = :newPassword, rol = :newRole WHERE gebruiker_id = :accountId");
-        $stmt->bindParam(':newPassword', $newPassword);
-        $stmt->bindParam(':newRole', $newRole);
-        $stmt->bindParam(':accountId', $accountId);
-        if ($stmt->execute()) {
-            echo "<script>window.location.href = '../Webpages/baqme_homepage.php?edit=true'</script>";
-        } else {
-            echo "Er is een fout opgetreden bij het bijwerken van de gebruiker.";
-            // Debugging: Voeg een regel toe om de query te bekijken die wordt uitgevoerd
-            echo "Query: " . $stmt->queryString;
-        }
-    } catch (PDOException $e) {
-        echo "Fout bij het bijwerken van de gebruiker: " . $e->getMessage();
-    }
-}
 
 
-// Functie om een accountweergave toe te voegen
-function AddAccountPass($gebruiker, $roles)
+
+
+
+$howManyAccounts = 0;
+//helper variable om doorheen te loopen
+
+//Deze function wordt meerdere keren aangeroepen vanuit de plek waar deze ge-displayed moeten worden.
+//Voor ieder account dat in de database gevonden is, maak een nieuw "passpoort" aan in. (in de navbar's submenu)
+function AddAccountPass($gebruiker)
 {
-    global $howManyAccounts;
+    global $howManyAccounts; //krijg de loop variable
     ?>
     <div class="accountPass">
-        <div class="accountPass_pfp">
-            <img src="<?php echo $gebruiker->getProfilePicture(); ?>">
-        </div>
+       <div class="accountPass_pfp">
+    <?php 
+    $profilePicture = $gebruiker->GetProfilePicture(); //display een profile picture indien de gebruiker en een heeft
+    if (!empty($profilePicture)) {
+        echo '<img src="data:image/jpeg;base64,'.base64_encode($profilePicture).'">';
+    } else {
+        echo '<img src="../Resources/user.svg" alt="Profielfoto">';
+    }
+    ?>
+    </div>
         <div class="accountPass_details">
             <div id="userData-<?php echo $howManyAccounts ?>">
                 <?php echo $gebruiker->getGebruikersnaam(); ?><br>
                 <?php echo $gebruiker->getRol(); ?>
             </div>
-            <form id="editForm-<?php echo $howManyAccounts ?>" class="editForm-invis">
+            <form id="editForm-<?php echo $howManyAccounts ?>" action="../Webpages/dashboard.php" method="post" class="editForm-invis">
                 <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <input type="text" readonly required="required" value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
-                <input type='password' name='newPassword' placeholder='Nieuw Wachtwoord' >
-                <select name='newRole'>
+                <input type="text" name='gebruikersnaam' value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
+                <input type='password' name='password' placeholder='Nieuw Wachtwoord' >
+                <select name='rol'>
                     <?php foreach (['admin', 'user'] as $roleOption): ?>
                         <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
                     <?php endforeach; ?>
                 </select>
+                </div>
+                <div>
+                    <!--HELL ON EARTH-->
+                    <!--Super ingewikkelde cosmetische knoppen om de edit en verwijderen er mooi at the laten zien.-->
+                    <!--De ene knop zorgt ervoor dat die zelf invisible gaat, en de andere twee laat zien-->
+                    <!--De andere knop met ToggleSubmenuButtons is dezelfde functionaliteit vise-versa-->
+                    <div class="accountPass_functionButton_column" id="accountPass_DeleteButton_<?php echo $howManyAccounts; ?>"
+                        onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'appear');">
+                        <img src="../Resources/delete.svg">
+                    </div>
+                    <button name="delete" type="submit" class="accountPass_functionButton_hidden" style="top: 0; right: 30px"
+                        id="accountPass_confirmDeleteButton_<?php echo $howManyAccounts; ?>">
+                        <img src="../Resources/check.svg">
+                    </button>
+                    <div class="accountPass_functionButton_hidden" style="top: 0; right: 0"
+                        id="accountPass_cancelDeleteButton_<?php echo $howManyAccounts; ?>"
+                        onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'disappear')">
+                        <img src="../Resources/remove.svg">
+                    </div>
+
+
+                    <div class="accountPass_functionButton_column" style="top: 30px" id="accountPass_EditButton_<?php echo $howManyAccounts; ?>"
+                        onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'appear'); 
+                        AddOrRemoveItemToClassList_ID('remove', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                        AddOrRemoveItemToClassList_ID('add', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                        <img src="../Resources/edit.svg">
+                    </div>
+                    <button name="update" type="submit" class="accountPass_functionButton_hidden" style="top: 30px; right: 30px"
+                        id="accountPass_confirmEditButton_<?php echo $howManyAccounts; ?>">
+                        <img src="../Resources/save.svg">
+                    </button>
+                    <div class="accountPass_functionButton_hidden" style="top: 30px; right: 0px"
+                        id="accountPass_cancelEditButton_<?php echo $howManyAccounts; ?>"
+                        onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'disappear'); 
+                        AddOrRemoveItemToClassList_ID('remove', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                        AddOrRemoveItemToClassList_ID('add', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                        <img src="../Resources/remove.svg">
+                    </div>
             </form>
-        </div>
-        <div>
-            <div class="accountPass_functionButton_column" id="accountPass_DeleteButton_<?php echo $howManyAccounts; ?>"
-                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'appear');">
-                <img src="../Resources/delete.svg">
-            </div>
-            <div class="accountPass_functionButton_hidden" style="top: 0; right: 30px"
-                id="accountPass_confirmDeleteButton_<?php echo $howManyAccounts; ?>">
-                <img src="../Resources/check.svg">
-            </div>
-            <div class="accountPass_functionButton_hidden" style="top: 0; right: 0"
-                id="accountPass_cancelDeleteButton_<?php echo $howManyAccounts; ?>"
-                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'disappear')">
-                <img src="../Resources/remove.svg">
-            </div>
-            <div class="accountPass_functionButton_column" style="top: 30px" id="accountPass_EditButton_<?php echo $howManyAccounts; ?>"
-                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'appear'); 
-                AddOrRemoveItemToClassList_ID('remove', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');
-                AddOrRemoveItemToClassList_ID('add', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');">
-                <img src="../Resources/edit.svg">
-            </div>
-            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 30px"
-                id="accountPass_confirmEditButton_<?php echo $howManyAccounts; ?>">
-                <img src="../Resources/save.svg">
-            </div>
-            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 0px"
-                id="accountPass_cancelEditButton_<?php echo $howManyAccounts; ?>"
-                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'disappear'); 
-                AddOrRemoveItemToClassList_ID('remove', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');
-                AddOrRemoveItemToClassList_ID('add', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');">
-                <img src="../Resources/remove.svg">
-            </div>
         </div>
     </div>
     <?php
-    $howManyAccounts++;
+    $howManyAccounts++; //increment de howmanyaccounts var om de volgende loop unieke IDs te krijgen (voor js functions enzo)
 }
 
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -208,47 +242,74 @@ function AddAccountPass($gebruiker, $roles)
     <title>Dashboard</title>
 </head>
 <body>
-<div id="bgBlur" onclick="ToggleSubMenu()"></div>
+<div id="bgBlur" onclick="ToggleSubMenu()"></div> <!--Coole blur waarop je kan klikken zodat de navbar's submenu weer weg gaat-->
     <nav id="navbar">
-                <div id="navbar_buttonLeft" onclick="logoutAndRedirect()">
+                <div id="navbar_buttonLeft" onclick="Redirect('../Webpages/login.php?logout=true')"> <!--uitlog knop-->
             <img src="../Resources/null.png">
         </div>
-        <div id="navbar_buttonCenter" onclick="Redirect('../baqme_homepage.php')">
+        <div id="navbar_buttonCenter" onclick="Redirect('../Webpages/dashboard.php')">
             <img src="../Resources/BQ-Logo-text.png">
         </div>
-        <?php displayUserManagementButton($role); ?>
-        <div id="subMenu">
-            <div id="accounts">
-                <?php 
-                require_once 'DBconnect.php';
-                require_once '../Classes/gebruikers.php';
-
-                $stmt = $db->pdo->query("SELECT * FROM gebruikers");
-
-                if ($stmt) {
-                    while($row = $stmt->fetch()) {
-                        $gebruiker = new Gebruiker($row["gebruiker_id"], $row["gebruikersnaam"], $row["wachtwoord"], $row["rol"], $row["created_at"], $row["profilepicture"]);
-                        AddAccountPass($gebruiker, $roles);
-                    }
-                } else {
-                    echo "Geen gebruikers gevonden.";
-                }
-                ?>
-            </div>
+        <?php displayUserManagementButton(); ?> <!--functie die checkt of de account management knop ge-displayed moet worden-->
+        <div class="time_navbar">
+            <div id="navbar_clock"></div>
+        <div id="navbar_timer"></div>
+        <div id="navbar_user_info">
+            <?php echo "Welkom  " . $_SESSION['loggedInGebruiker']->GetGebruikersnaam(); ?>
         </div>
-        
+        </div>
     </nav>
-    <script>
-function logoutAndRedirect() {
-    window.location.href = "login.php?logout=true";
-   
-}
+</body>
+</html>
+
+<script>
+
+
 var url = window.location.href; 
-if(url.includes("navbar.php")){
+if(url.includes("navbar.php")){ //check of the gebruiker handmatig geprobeerd heeft om de navbar url in te vullen
     window.location.href ="../Webpages/login.php";
 }
 
-</script>
 
-</body>
-</html>
+//timer voor automatische vernieuwing van de pagina elke 5 minuten
+var countdown = 300; //seconden
+var timerDisplay = document.getElementById("navbar_timer");
+
+function updateTimer() {
+    var minutes = Math.floor(countdown / 60);
+    var seconds = countdown % 60;
+
+    var timeString = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+    timerDisplay.innerText = timeString; //display de tijd in minuten
+
+    countdown--;
+
+    if (countdown < 0) {
+        location.reload();
+    } else {
+        setTimeout(updateTimer, 1000); // Wacht 1 seconde voordat de timer wordt bijgewerkt
+    }
+}
+
+//Start de timer
+updateTimer();
+
+
+//klok functie om de huidige tijd weer te geven
+function updateClock() {
+    var now = new Date(); //huidige datum en tijd
+    var hours = now.getHours().toString().padStart(2, '0'); //uur (in 24-uurs formaat)
+    var minutes = now.getMinutes().toString().padStart(2, '0');
+    var seconds = now.getSeconds().toString().padStart(2, '0');
+
+    // Zet de tijd in het juiste formaat (hh:mm:ss)
+    var timeString = hours + ":" + minutes + ":" + seconds;
+    document.getElementById("navbar_clock").innerText ="Time : " + timeString; //update de klok
+
+    //Update de klok elke seconde
+    setTimeout(updateClock, 1000);
+}
+
+// Start de klok
+updateClock();
+</script>
