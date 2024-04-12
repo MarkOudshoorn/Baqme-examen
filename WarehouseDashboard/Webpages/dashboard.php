@@ -1,10 +1,9 @@
 <?php
-session_start();
 require_once("../Global/navbar.php");
 
 
 // Als de gebruiker niet is ingelogd, stuur ze naar de inlogpagina
-if (!isset($_SESSION['gebruiker_id'])) {
+if (!isset($_SESSION['loggedInGebruiker'])) {
     echo '<script>Redirect("login.php");</script>';
     exit;
 }
@@ -16,18 +15,6 @@ require_once "../Classes/open-issues.php";
 require_once "../Global/DBconnect.php"; // Inclusief het bestand voor databaseverbinding
 global $db;
 
-// Controleer de rol van de ingelogde gebruiker
-$rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : '';
-
-// Uitlogfunctionaliteit
-if (isset($_GET['logout'])) {
-    // Vernietig de sessie
-    session_unset();
-    session_destroy();
-    // Stuur de gebruiker door naar de inlogpagina
-    header("Location: login.php");
-    exit;
-}
 
 // Steden ophalen uit de database met behulp van de PDO-verbinding
 $stmt = $db->pdo->query("SELECT DISTINCT fleet FROM vehicles WHERE fleet <> ''"); // Alle fleets ophalen, inclusief lege

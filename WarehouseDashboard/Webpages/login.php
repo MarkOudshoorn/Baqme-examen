@@ -12,17 +12,27 @@ if (isset($_GET['logout'])) {
 }
 
 // Als de gebruiker al is ingelogd, stuur ze door naar de startpagina
-if(isset($_SESSION['gebruiker_id'])) {
+if(isset($_SESSION['loggedInGebruiker'])) {
     header("Location: dashboard.php");
     exit;
 }
 
+// Uitlogfunctionaliteit
+if (isset($_GET['logout'])) {
+    // Vernietig de sessie
+    session_unset();
+    session_destroy();
+    // Stuur de gebruiker door naar de inlogpagina
+    header("Location: login.php");
+    exit;
+}
+
+require_once "../Classes/gebruikers.php";
 require_once "../Global/DBconnect.php";
 global $db;
+
+
 $foutmelding = null;
-
-
-
 $gebruikersnaam = null;
 $wachtwoord = null;
 
@@ -35,7 +45,7 @@ if(isset($_POST["wachtwoord"]) && $_POST["wachtwoord"] != null)
 if($gebruikersnaam && $wachtwoord)
 {
     // Query om te controleren of de gebruiker bestaat in de database
-    $query = "SELECT gebruiker_id, gebruikersnaam, wachtwoord, rol FROM gebruikers WHERE gebruikersnaam = ?";
+    $query = "SELECT * FROM gebruikers WHERE gebruikersnaam = ?";
 
     try {
         // Bereid de SQL-statement voor
@@ -52,11 +62,10 @@ if($gebruikersnaam && $wachtwoord)
         
         // Controleer of de gebruiker bestaat en of het wachtwoord klopt
         if($gebruiker && password_verify($wachtwoord, $gebruiker['wachtwoord'])) {
-            // Start een nieuwe sessie
-            $_SESSION["gebruiker_id"] = $gebruiker['gebruiker_id'];
-            $_SESSION["gebruikersnaam"] = $gebruiker['gebruikersnaam'];
-            $_SESSION["rol"] = $gebruiker['rol']; // Voeg rol toe aan sessie
-            
+            $_SESSION["loggedInGebruiker"] = new Gebruiker($gebruiker['gebruiker_id'], $gebruiker['gebruikersnaam'], 
+                                                        $gebruiker['wachtwoord'], $gebruiker['rol'], $gebruiker['created_at'],
+                                                        $gebruiker['profilepicture']);
+
             // Doorstuur de gebruiker naar de startpagina
             header("Location: dashboard.php");
             exit;
