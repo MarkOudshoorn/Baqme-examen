@@ -55,7 +55,6 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
         }
         else
         {
-            console.log("edit");
             AddOrRemoveItemToClassList_ID("add", "accountPass_EditButton_" + number, "accountPass_functionButton_hidden");
             AddOrRemoveItemToClassList_ID("add", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");
@@ -73,7 +72,6 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelDeleteButton_" + number, "accountPass_functionButton_hidden");        }
         else
         {
-            console.log("edit");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_EditButton_" + number, "accountPass_functionButton_hidden");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");
