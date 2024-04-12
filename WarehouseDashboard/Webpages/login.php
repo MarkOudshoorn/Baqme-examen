@@ -3,10 +3,8 @@ session_start();
 
 // Uitlogfunctionaliteit
 if (isset($_GET['logout'])) {
-    // Vernietig de sessie
     session_unset();
     session_destroy();
-    // Stuur de gebruiker door naar de inlogpagina
     header("Location: login.php");
     exit;
 }
@@ -16,21 +14,9 @@ if(isset($_SESSION['loggedInGebruiker'])) {
     header("Location: dashboard.php");
     exit;
 }
-
-// Uitlogfunctionaliteit
-if (isset($_GET['logout'])) {
-    // Vernietig de sessie
-    session_unset();
-    session_destroy();
-    // Stuur de gebruiker door naar de inlogpagina
-    header("Location: login.php");
-    exit;
-}
-
 require_once "../Classes/gebruikers.php";
 require_once "../Global/DBconnect.php";
 global $db;
-
 
 $foutmelding = null;
 $gebruikersnaam = null;
