@@ -17,16 +17,6 @@ if(isset($_SESSION['loggedInGebruiker'])) {
     exit;
 }
 
-// Uitlogfunctionaliteit
-if (isset($_GET['logout'])) {
-    // Vernietig de sessie
-    session_unset();
-    session_destroy();
-    // Stuur de gebruiker door naar de inlogpagina
-    header("Location: login.php");
-    exit;
-}
-
 require_once "../Classes/gebruikers.php";
 require_once "../Global/DBconnect.php";
 global $db;
