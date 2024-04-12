@@ -140,28 +140,67 @@ function AddAccountPass($gebruiker, $roles)
     global $howManyAccounts;
     ?>
     <div class="accountPass">
-        <div class="accountPass_pfp">
-            <img src="<?php echo $gebruiker->getProfilePicture(); ?>">
-        </div>
+       <div class="accountPass_pfp">
+    <?php 
+    $profilePicture = $gebruiker->getProfilePicture();
+    if (!empty($profilePicture)) {
+        echo '<img src="data:image/jpeg;base64,'.base64_encode($profilePicture).'">';
+    } else {
+        echo '<img src="placeholder.jpg" alt="Profielfoto">';
+    }
+
+
+   
+    ?>
+</div>
+
         <div class="accountPass_details">
-            <?php echo $gebruiker->getGebruikersnaam(); ?><br>
-            <!-- Formulier voor het bijwerken van wachtwoord en rol -->
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
+            <div id="userData-<?php echo $howManyAccounts ?>">
+                <?php echo $gebruiker->getGebruikersnaam(); ?><br>
+                <?php echo $gebruiker->getRol(); ?> 
+            </div>
+            <form id="editForm-<?php echo $howManyAccounts ?>" class="editForm-invis">
                 <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
+                <input type="text" readonly required="required" value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
                 <input type='password' name='newPassword' placeholder='Nieuw Wachtwoord' >
                 <select name='newRole'>
-    <?php foreach (['admin', 'user'] as $roleOption): ?>
-        <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
-    <?php endforeach; ?>
-</select>
-
-                <button type='submit' name='updateUser'>Wijzigingen Opslaan</button>
+                    <?php foreach (['admin', 'user'] as $roleOption): ?>
+                        <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
+                    <?php endforeach; ?>
+                </select>
             </form>
-            <!-- Formulier voor het verwijderen van een gebruiker -->
-            <form method='POST' action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
-                <input type='hidden' name='deleteUserId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
-                <button type='submit' name='deleteUser'>Gebruiker Verwijderen</button>
-            </form>
+        </div>
+        <div>
+            <div class="accountPass_functionButton_column" id="accountPass_DeleteButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'appear');">
+                <img src="../Resources/delete.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 0; right: 30px"
+                id="accountPass_confirmDeleteButton_<?php echo $howManyAccounts; ?>">
+                <img src="../Resources/check.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 0; right: 0"
+                id="accountPass_cancelDeleteButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('delete', '<?php echo $howManyAccounts; ?>', 'disappear')">
+                <img src="../Resources/remove.svg">
+            </div>
+            <div class="accountPass_functionButton_column" style="top: 30px" id="accountPass_EditButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'appear'); 
+                AddOrRemoveItemToClassList_ID('remove', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                AddOrRemoveItemToClassList_ID('add', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                <img src="../Resources/edit.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 30px"
+                id="accountPass_confirmEditButton_<?php echo $howManyAccounts; ?>">
+                <img src="../Resources/save.svg">
+            </div>
+            <div class="accountPass_functionButton_hidden" style="top: 30px; right: 0px"
+                id="accountPass_cancelEditButton_<?php echo $howManyAccounts; ?>"
+                onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'disappear'); 
+                AddOrRemoveItemToClassList_ID('remove', 'userData-<?php echo $howManyAccounts ?>', 'editForm-invis');
+                AddOrRemoveItemToClassList_ID('add', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');">
+                <img src="../Resources/remove.svg">
+            </div>
         </div>
     </div>
     <?php
@@ -179,15 +218,47 @@ function AddAccountPass($gebruiker, $roles)
     <script src="../Global/jsFunctions.js"></script>
     <title>Dashboard</title>
 </head>
+<style>
+.time_navbar{
+        width: 100%;
+    height: 30px;
+    background-color: rgb(39 57 56);
+    display: flex;
+}
+#navbar_clock{
+    font-size: x-large;
+    font-family: fantasy;
+    color: white;
+}
+#navbar_timer{
+       font-size: x-large;
+    font-family: monospace;
+    color: white;
+    position: absolute;
+    right: 50%;
+    left: 50%;
+    width: 200px;
+}
+#navbar_user_info{
+    font-size: x-large;
+    font-family: monospace;
+    color: white;
+    right: 0;
+    position: absolute;
+}
+</style>
 <body>
-    <div id="bgBlur" onclick="ToggleSubMenu()"></div>
+<div id="bgBlur" onclick="ToggleSubMenu()"></div>
     <nav id="navbar">
+    
                 <div id="navbar_buttonLeft" onclick="logoutAndRedirect()">
             <img src="../Resources/null.png">
         </div>
+        
         <div id="navbar_buttonCenter" onclick="Redirect('../baqme_homepage.php')">
             <img src="../Resources/BQ-Logo-text.png">
         </div>
+       
         <?php displayUserManagementButton($role); ?>
         <div id="subMenu">
             <div id="accounts">
@@ -208,8 +279,17 @@ function AddAccountPass($gebruiker, $roles)
                 ?>
             </div>
         </div>
-        
+        <div class="time_navbar">
+          <div id="navbar_clock"></div>
+     <div id="navbar_timer"></div>
+      <div id="navbar_user_info">
+            <?php 
+            echo "Welkom  " . $_SESSION['gebruikersnaam']; 
+            ?>
+        </div>
+        </div>
     </nav>
+  
     <script>
 function logoutAndRedirect() {
     window.location.href = "login.php?logout=true";
@@ -219,7 +299,46 @@ var url = window.location.href;
 if(url.includes("navbar.php")){
     window.location.href ="../Webpages/login.php";
 }
+   // Timer voor automatische vernieuwing van de pagina elke 5 minuten
+        var countdown = 300; // Tijd in seconden
+        var timerDisplay = document.getElementById("navbar_timer");
 
+        function updateTimer() {
+            var minutes = Math.floor(countdown / 60); // Bereken het aantal minuten
+            var seconds = countdown % 60; // Bereken het aantal seconden
+
+            // Zet de tijd in het juiste formaat (mm:ss)
+            var timeString = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+            timerDisplay.innerText =  timeString;
+
+            countdown--;
+
+            if (countdown < 0) {
+                location.reload();
+            } else {
+                setTimeout(updateTimer, 1000); // Wacht 1 seconde voordat de timer wordt bijgewerkt
+            }
+        }
+
+        // Start de timer
+        updateTimer();
+         // Klokfunctie om de huidige tijd weer te geven
+        function updateClock() {
+            var now = new Date(); // Huidige datum en tijd
+            var hours = now.getHours().toString().padStart(2, '0'); // Uur (in 24-uurs formaat)
+            var minutes = now.getMinutes().toString().padStart(2, '0'); // Minuten
+            var seconds = now.getSeconds().toString().padStart(2, '0'); // Seconden
+
+            // Zet de tijd in het juiste formaat (hh:mm:ss)
+            var timeString = hours + ":" + minutes + ":" + seconds;
+            document.getElementById("navbar_clock").innerText ="Time : " + timeString; // Update de klok
+
+            // Update de klok elke seconde
+            setTimeout(updateClock, 1000);
+        }
+
+        // Start de klok wanneer de pagina geladen is
+        updateClock();
 </script>
 
 </body>
