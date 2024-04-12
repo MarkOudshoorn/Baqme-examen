@@ -23,75 +23,82 @@ $steden = $stmt->fetchAll(PDO::FETCH_COLUMN);
 ?>
 
 <body>
-    <div id="listsContainer">
-        <?php foreach ($steden as $stad) : ?>
-            <?php
-            // Query for warehouse lists
-            $fietsen_warehouse = Query_warehouse($stad);
-            // Query for to-go lists
-            $fietsen_klaar = Query_done($stad);
-            ?>
-            <div class="city-list">
-                <div class="listHeaders">
-                    <h2 class="listHeader-0"><?= $stad ?></h2>
-                    <div class="listSubheader">
-                        <h2 class="listHeader-1">To-do</h2>
-                        <h2 class="listHeader-2">Ready</h2>
+ <div id="listsContainer">
+    <?php foreach ($steden as $stad) : ?>
+        <div class="steden_namen">
+            <div class="listHeader-2"><?= $stad ?></div>
+        
+        <div class="listHeader-0" >
+        <?php
+        // Query voor de "To-do" lijsten
+        $fietsen_warehouse = Query_warehouse($stad);
+        ?>
+        <div class="warehouse-list">
+            <h2 class="listHeader-2">To-do</h2>
+            <?php foreach ($fietsen_warehouse as $fiets) : ?>
+                <?php
+                $open_issues = explode(',', $fiets['open_issues']);
+                $wh_issues = explode(',', $fiets['wh_issues']);
+                ?>
+                <div class="fiets-container">
+                    <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
+                    <div class="issues-container">
+                        <?php foreach ($open_issues as $issue) : ?>
+                            <?php $trimmed = trim($issue); 
+                            if($trimmed != "")
+                                echo '<div class="issue">' . $trimmed . '</div>'; ?>
+
+                        <?php endforeach; ?>
+
+                        <?php foreach ($wh_issues as $issue) : ?>
+                            <?php $trimmed = trim($issue); 
+                            if($trimmed != "")
+                                echo '<div class="issue">' . $trimmed . '</div>'; ?>
+                        <?php endforeach; ?>
+                        <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
                     </div>
                 </div>
-                <div style="display: flex;">
-                    <div class="todo-list">
-                        <?php foreach ($fietsen_warehouse as $fiets) : ?>
-                            <?php
-                            $open_issues = explode(',', $fiets['open_issues']);
-                            $wh_issues = explode(',', $fiets['wh_issues']);
-                            ?>
-                            <div class="fiets-container">
-                                <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
-                                <div class="issues-container">
-                                    <?php foreach ($open_issues as $issue) : ?>
-                                        <?php $trimmed = trim($issue);
-                                        if ($trimmed != "") echo '<div class="issue">' . $trimmed . '</div>'; ?>
-                                    <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
 
-                                    <?php foreach ($wh_issues as $issue) : ?>
-                                        <?php $trimmed = trim($issue);
-                                        if ($trimmed != "") echo '<div class="issue">' . $trimmed . '</div>'; ?>
-                                    <?php endforeach; ?>
-                                    <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="ready-list">
-                        <?php foreach ($fietsen_klaar as $fiets) : ?>
-                            <?php
-                            $open_issues = explode(',', $fiets['open_issues']);
-                            $wh_issues = explode(',', $fiets['wh_issues']);
-                            ?>
-                            <div class="fiets-container">
-                                <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
-                                <div class="issues-container">
-                                    <?php foreach ($open_issues as $issue) : ?>
-                                        <?php $trimmed = trim($issue);
-                                        if ($trimmed != "") echo '<div class="issue">' . $trimmed . '</div>'; ?>
-                                    <?php endforeach; ?>
+        <?php
+        // Query voor de "Ready" lijsten
+        $fietsen_klaar = Query_done($stad);
+        ?>
+        <div class="togo-list">
+            <h2 class="listHeader-2">Ready</h2>
+            <?php foreach ($fietsen_klaar as $fiets) : ?>
+                <?php
+                $open_issues = explode(',', $fiets['open_issues']);
+                $wh_issues = explode(',', $fiets['wh_issues']);
+                ?>
+                <div class="fiets-container">
+                    <div class="issue-header"><b style="color: white;"><?= $fiets['title'] ?></b> <small class="subHeader"><?= $fiets['vehicletype'] ?></small></div>
+                    <div class="issues-container">
+                        <?php foreach ($open_issues as $issue) : ?>
+                            <?php $trimmed = trim($issue); 
+                            if($trimmed != "")
+                                echo '<div class="issue">' . $trimmed . '</div>'; ?>
 
-                                    <?php foreach ($wh_issues as $issue) : ?>
-                                        <?php $trimmed = trim($issue);
-                                        if ($trimmed != "") echo '<div class="issue">' . $trimmed . '</div>'; ?>
-                                    <?php endforeach; ?>
-                                    <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
-                                </div>
-                            </div>
                         <?php endforeach; ?>
+
+                        <?php foreach ($wh_issues as $issue) : ?>
+                            <?php $trimmed = trim($issue); 
+                            if($trimmed != "")
+                                echo '<div class="issue">' . $trimmed . '</div>'; ?>
+                        <?php endforeach; ?>
+                        <div class="JRIssues"><?= $fiets["joyride_status"] ?></div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+            <?php endforeach; ?>
+        </div>
+        </div>
+        </div>
+    <?php endforeach; ?>
+    
+</div>
+
 </body>
-
 </html>
 
 <?php

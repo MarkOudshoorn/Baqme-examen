@@ -298,395 +298,365 @@ img{
 
 /* #region baqme_homepage.php */
 #listsContainer {
-    margin-top: 100px;
+     margin-top: 100px;
+    border-color: wheat;
     display: flex;
     width: 100%;
     color: black;
     background-image: url("../Resources/plainBg.jpg");
     background-size: cover;
     background-attachment: fixed;
-    align-content: normal;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-direction: row;
+    display:flex;
 }
-
-.stad-list {
-    display: flex;
-    height: 50vh;
-    flex-wrap: wrap; /* Allow items to wrap to next line */
+@media only screen and (max-width: 760px) {
+    #listsContainer {
+        margin-top: 100px;
+        border-color: wheat;
+        display: flex;
+        width: 100%;
+        color: black;
+        background-image: url("../Resources/plainBg.jpg");
+        background-size: cover;
+        background-attachment: fixed;
+        display: block;
+    }
 }
+    .steden_namen {
+        display: block;
+        width: 100%;
+        margin: 0;
+        font-size: 20px;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+    }
 
-.city-list{
-    display: inline;
-    width: auto;
-    flex: 1 1 0;
-}
+    .stad-list {
+        display: flex;
+        height: 50vh;
+        flex-wrap: wrap; /* Allow items to wrap to next line */
+    }
 
-.listHeader-0{
-    background-color: rgb(41,43,47);
-    width: 100%;
-    height: 30px;
-    margin: 0;
-    font-size: 20px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 5px;
-}
-
-.listHeader-1{
-    background-color: rgb(47,49,54);
-    width: 50%;
-    height: 30px;
-    margin: 0;
-    font-size: 20px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    box-sizing: border-box;
-    padding: 5px;
-}
-
-.listHeader-2{
-    background-color: rgb(51, 54, 63);
-    width: 50%;
-    height: 30px;
-    margin: 0;
-    font-size: 20px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    box-sizing: border-box;
-    padding: 5px;
-}
-
-.listHeaders{
-    width: 100%;
-}
-
-.listSubheader{
-    display: flex;
-    width: 100%;
-}
-
-.todo-list {
-    width: 50%;
-}
-
-.ready-list{
-    width: 50%;
-}
-
-.fiets-container{
-    margin-top: 10px;
-    background-image: linear-gradient(180deg, rgb(82,224,193), rgb(176, 244, 230));
-    border-radius: 10px;
-}
-
-
-
-.issue-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-}
-
-.subHeader {
-    color: black;
-    font-size: 0.8em;
-}
-
-.issue{
-    font-size: smaller;
-    padding: 1px 2px 1px 2px;
-}
-
-.JRIssues{
-    padding: 5px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 10px;
-}
-
-
-/* #endregion baqme_homepage.php */
-
-
-/* #region navbar.php */
-#navbar {
-    z-index: 1;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 100px;
-    background-color: rgb(32,34,37);
-}
-
-#navbar_buttonLeft{
-    width: 53.7px;
-    height: 53.7px;
-    padding: 10px;
-    box-sizing: border-box;
-    display: inline-block;
-    cursor: pointer;
-}
-
-#navbar_buttonLeft img{
-    width: 85px;
-    height: 76px;
-    position: absolute;
-    left: -9px;
-    top: -6px;
-    background-image: url("../Resources/logout-static.gif");
-    background-size: cover;
-    filter: brightness(0) invert(1);
-}
-
-#navbar_buttonLeft img:hover{
-    width: 85px;
-    height: 76px;
-    position: absolute;
-    left: -9px;
-    top: -6px;
-    background-image: url("../Resources/logout.gif");
-    background-size: cover;
-    filter: brightness(0) invert(1);
-
-}
-
-#navbar_buttonCenter{
-    display: inline-block;
-    width: 200px;
-    height: 50px;
-    margin-top: 16px;
-    margin-left: calc(50vw - 150px);
-    cursor: pointer;
-}
-
-#navbar_buttonRight{
-    width: 53.7px;
-    height: 53.7px;
-    padding: 10px;
-    margin-left: auto;
+    .listHeader-0 {
     
-    box-sizing: border-box;
-    position: absolute;
-    right: 15px;
-    top: 0;
-    cursor: pointer;
-}
+        width: 100%;
+        display: flex;
+    }
 
-#navbar_buttonRight img{
-    width: 53.7px;
-    height: 53.7px;
-    filter: brightness(0) invert(1);
-    transform: rotate(0deg);
-    transition: 500ms;
-}
+    .listHeader-2 {
+        background-color: rgb(51, 54, 63);
+        width: 100%;
+        text-align: center;
+        margin: 0;
+    }
 
-#navbar_buttonRight img:hover{
+    .warehouse-list, .togo-list {
+        flex-basis: 100%;
 
-    width: 53.7px;
-    height: 53.7px;
-    filter: brightness(0) invert(1);
-    transform: rotate(90deg);
-    transition: 500ms;
-}
+    }
 
-.time_navbar{
-    width: 100%;
-    height: 30px;
-    background-color: rgb(39 57 56);
-    display: flex;
-    padding-top: 2.5px;
-    box-sizing: border-box;
-}
+    .fiets-container {
+        width: -webkit-fill-available;
+        margin-top: 10px;
+        background-image: linear-gradient(180deg, rgb(82,224,193), rgb(176, 244, 230));
+        border-radius: 10px;
+        display: inline-block;
+        margin: 2px;
+    }
 
-#navbar_clock{
-    font-size: x-large;
-    font-family: "Poppins", sans-serif;
-    color: white;
-}
+    .issue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+    }
 
-#navbar_timer{
-   font-size: x-large;
-    font-family: monospace;
-    color: white;
-    position: absolute;
-    right: 50%;
-    left: 50%;
-    width: 200px;
-}
+    .subHeader {
+        color: black;
+        font-size: 0.8em;
+    }
 
-#navbar_user_info{
-    font-size: x-large;
-    font-family: monospace;
-    color: white;
-    right: 0;
-    position: absolute;
-}
+    .issue {
+        font-size: smaller;
+        padding: 1px 2px 1px 2px;
+    }
 
-/* #region accountsSubMenu */
-
-.blur {
-    z-index: 0;
-    width: 110vw;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    backdrop-filter: blur(10px);
-    transition: 0.5s;
-}
+    .JRIssues {
+        padding: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 10px;
+    }
 
 
-.noblur {
-    z-index: 0;
-    width: 110vw;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    backdrop-filter: blur(0);
-    transition: 0.5s;
-    pointer-events: none;
-}
-
-#subMenu{
-    z-index: 2;
-    background-color: rgb(40,43,48);
-    position: fixed;
-    top: 0;
-    right: -500px;
-    height: 100vh;
-    transition: right 0.3s ease;
-}
-
-#submenuOptions{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    width: 420px;
-    height: 75px;
-    background-color: rgb(30, 32, 34);
-    
-}
-
-.submenu_options_button{
-    width: 75px;
-    height: 75px;
-    background-color: transparent;
-    border: none;
-    box-sizing: border-box;
-    padding: 5px;
-    cursor: pointer;
-}
-
-.submenu_option_button_image{
-    width: 50px;
-    height: 50px;
-    filter: brightness(0) invert(1);
-}
-
-#accounts{
-    overflow-y: scroll;
-    width: 420px;
-    height: 100vh;
-    outline: none;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.accountPass {
-    height: 100px;
-    width: 350px;
-    display: inline-flex;
-    margin: 15px 0 15px 33px;
-    background-color: rgb(82,224,193);
-    box-sizing: border-box;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 10px 5px 5px 0 rgba(0, 0, 0, 0.25);
-    border-radius: 0 0 30px 0;
-}
-
-.accountPass_functionButton_row{
-	all: unset;
-}
-
-.accountPass_pfp{
-    width: 100px;
-    height: 100px;
-    border-right: 2px solid black;
-    box-sizing: border-box;
-    background-color: rgb(35, 171, 142);
-}
-
-.accountPass_details{
-    padding: 10px;
-    width: 300px;
-    height: 100px;
-    background-color: rgb(82,224,193);
-}
+    /* #endregion baqme_homepage.php */
 
 
-.accountPass_functionButton_row{
-    background-color: rgb(82,224,193);
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    display: table-cell;
-    position: absolute;
-}
+    /* #region navbar.php */
+    #navbar {
+        z-index: 1;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 100px;
+        background-color: rgb(32,34,37);
+    }
 
-.accountPass_functionButton_column{
-    background-color: rgb(82,224,193);
-    width: 30px;
-    height: 30px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    display: flex;
-    position: absolute;
-    right: 0;
-}
+    #navbar_buttonLeft {
+        width: 53.7px;
+        height: 53.7px;
+        padding: 10px;
+        box-sizing: border-box;
+        display: inline-block;
+        cursor: pointer;
+    }
 
-.accountPass_options{
-    background-color: rgb(82,224,193);
-}
+        #navbar_buttonLeft img {
+            width: 85px;
+            height: 76px;
+            position: absolute;
+            left: -9px;
+            top: -6px;
+            background-image: url("../Resources/logout-static.gif");
+            background-size: cover;
+            filter: brightness(0) invert(1);
+        }
 
-.accountPass_functionButton_hidden{
-    display: none;
-}
+            #navbar_buttonLeft img:hover {
+                width: 85px;
+                height: 76px;
+                position: absolute;
+                left: -9px;
+                top: -6px;
+                background-image: url("../Resources/logout.gif");
+                background-size: cover;
+                filter: brightness(0) invert(1);
+            }
 
-.accountPass_functionButton_row:hover{
-    border-radius: 25px;
-    background-color: rgb(71, 83, 178);
-    transition: 500ms;
-}
+    #navbar_buttonCenter {
+        display: inline-block;
+        width: auto;
+        height: 50px;
+        margin-top: 16px;
+        margin-left: calc(50vw - 150px);
+        cursor: pointer;
+    }
 
-.accountPass_functionButton_column:hover{
-    border-radius: 25px;
-    background-color: rgb(71, 83, 178);
-    transition: 500ms;
-}
+    #navbar_buttonRight {
+        width: 53.7px;
+        height: 53.7px;
+        padding: 10px;
+        margin-left: auto;
+        box-sizing: border-box;
+        position: absolute;
+        right: 15px;
+        top: 0;
+        cursor: pointer;
+    }
 
-.editForm{
-    display: block;
-}
+        #navbar_buttonRight img {
+            width: 53.7px;
+            height: 53.7px;
+            filter: brightness(0) invert(1);
+            transform: rotate(0deg);
+            transition: 500ms;
+        }
 
-.editForm-invis{
-    display: none;
-}
+            #navbar_buttonRight img:hover {
+                width: 53.7px;
+                height: 53.7px;
+                filter: brightness(0) invert(1);
+                transform: rotate(90deg);
+                transition: 500ms;
+            }
 
-/* #endregion accountsSubMenu */
+    .time_navbar {
+        width: 100%;
+        height: 30px;
+        background-color: rgb(39 57 56);
+        display: flex;
+        padding-top: 2.5px;
+        box-sizing: border-box;
+    }
 
-/* #endregion navbar.php */
+    #navbar_clock {
+        font-size: x-large;
+        font-family: "Poppins", sans-serif;
+        color: white;
+    }
+
+    #navbar_timer {
+        font-size: x-large;
+        font-family: monospace;
+        color: white;
+        position: absolute;
+        right: 50%;
+        left: 50%;
+        width: 200px;
+    }
+
+    #navbar_user_info {
+        font-size: x-large;
+        font-family: monospace;
+        color: white;
+        right: 0;
+        position: absolute;
+    }
+
+    /* #region accountsSubMenu */
+
+    .blur {
+        z-index: 0;
+        width: 110vw;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        backdrop-filter: blur(10px);
+        transition: 0.5s;
+    }
+
+
+    .noblur {
+        z-index: 0;
+        width: 110vw;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        backdrop-filter: blur(0);
+        transition: 0.5s;
+        pointer-events: none;
+    }
+
+    #subMenu {
+        z-index: 2;
+        background-color: rgb(40,43,48);
+        position: fixed;
+        top: 0;
+        right: -500px;
+        height: 100%;
+        transition: right 0.3s ease;
+    }
+
+    #submenuOptions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        width: 420px;
+        height: 70px;
+        background-color: rgb(30, 32, 34);
+    }
+
+    .submenu_options_button {
+        width: 75px;
+        height: 75px;
+        background-color: transparent;
+        border: none;
+        box-sizing: border-box;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .submenu_option_button_image {
+        width: 50px;
+        height: 50px;
+        filter: brightness(0) invert(1);
+    }
+
+    #accounts {
+        overflow-y: scroll;
+        width: 420px;
+        height: 100vh;
+        outline: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .accountPass {
+        height: 100px;
+        width: 350px;
+        display: inline-flex;
+        margin: 15px 0 15px 33px;
+        background-color: rgb(82,224,193);
+        box-sizing: border-box;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 10px 5px 5px 0 rgba(0, 0, 0, 0.25);
+        border-radius: 0 0 30px 0;
+    }
+
+    .accountPass_functionButton_row {
+        all: unset;
+    }
+
+    .accountPass_pfp {
+        width: 100px;
+        height: 100px;
+        border-right: 2px solid black;
+        box-sizing: border-box;
+        background-color: rgb(35, 171, 142);
+    }
+
+    .accountPass_details {
+        padding: 10px;
+        width: 300px;
+        height: 100px;
+        background-color: rgb(82,224,193);
+    }
+
+
+    .accountPass_functionButton_row {
+        background-color: rgb(82,224,193);
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        display: table-cell;
+        position: absolute;
+    }
+
+    .accountPass_functionButton_column {
+        background-color: rgb(82,224,193);
+        width: 30px;
+        height: 30px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        display: flex;
+        position: absolute;
+        right: 0;
+    }
+
+    .accountPass_options {
+        background-color: rgb(82,224,193);
+    }
+
+    .accountPass_functionButton_hidden {
+        display: none;
+    }
+
+    .accountPass_functionButton_row:hover {
+        border-radius: 25px;
+        background-color: rgb(71, 83, 178);
+        transition: 500ms;
+    }
+
+    .accountPass_functionButton_column:hover {
+        border-radius: 25px;
+        background-color: rgb(71, 83, 178);
+        transition: 500ms;
+    }
+
+    .editForm {
+        display: block;
+    }
+
+    .editForm-invis {
+        display: none;
+    }
+
+    /* #endregion accountsSubMenu */
+
+    /* #endregion navbar.php */
