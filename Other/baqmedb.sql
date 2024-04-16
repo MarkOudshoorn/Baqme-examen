@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2024 at 04:54 PM
+-- Generation Time: Apr 12, 2024 at 06:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,8 +42,7 @@ CREATE TABLE `gebruikers` (
 --
 
 INSERT INTO `gebruikers` (`gebruiker_id`, `gebruikersnaam`, `wachtwoord`, `rol`, `created_at`, `updated`, `profilepicture`) VALUES
-(1, 'marko@baqme.com', '$2y$10$h5BVl3iLECE0.ysuXqj7T.NHmZQQTKW22W7.RTV8RpdpOX0cFPpti', 'admin', '2024-04-08 11:06:31', 0, NULL),
-(2, 'aramko@baqme.com', '$2y$10$qlSsh59/IhrX5I71eo8RMO8UusRnn1uHiwNQUzUEf8bkwWGu8KzHO', 'user', '2024-04-08 11:06:31', 0, NULL);
+(3, 'Aramko@baqme.com', '$2y$10$usb.4yL7xe/9x46ILxqEQ./2GyV5R4Fiuug.DhFHE7c7FD6aUcPvm', 'admin', '2024-04-12 03:04:39', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -960,7 +959,7 @@ CREATE TABLE `vehicles` (
 --
 
 INSERT INTO `vehicles` (`id`, `title`, `stat`, `content`, `created`, `last_modified`, `edit_lock`, `edit_last`, `tracker`, `vehicletype`, `adjust`, `fleet`, `last_maintenance`, `last_report`, `deploy`, `b2blocation`, `b2blocation_coordinates`, `sleutelcode`, `station_based`, `project`, `special_project_desc`, `lastpump`, `station_coords`, `yeply`) VALUES
-('101903', 'BQ0300', 'publish', '', '1708950704', '1710768334', '1710764591:1', '1', 'tracefy', 'dolly', '', 'b2b', '', '', '0', 'BOOST / Statenweg 6a, Rotterdam / Eva van Steijn', '', '', '0', '', '', '', '', '1'),
+('101903', 'BQ0300', 'publish', '', '1708950704', '1710768334', '1710764591:1', '1', 'tracefy', 'dolly', '', 'b2b', '', '', '1', 'BOOST / Statenweg 6a, Rotterdam / Eva van Steijn', '', '', '0', '', '', '', '', '1'),
 ('101904', 'BQ0308', 'publish', '', '1708950832', '1710768359', '1710764616:1', '1', 'tracefy', 'dolly', '', 'b2b', '', '', '0', 'BASIC / Stadhoudersplein 66, Rotterdam / Jeltje Meijvogel', '', '', '0', '', '', '', '', '1'),
 ('101905', 'BQ0301', 'publish', '', '1708950943', '1710768260', '1710764538:1', '1', 'tracefy', 'dolly', '', 'b2b', '', '', '0', 'BOOST / Jonker Fransstraat 64A, Rotterdam / Petra de Jager', '', '', '0', '', '', '', '', '1'),
 ('101906', 'BQ0305', 'publish', '', '1708950998', '1710768293', '1710764549:1', '1', 'tracefy', 'dolly', '', 'b2b', '', '', '0', 'Light / Essenburgstraat 37A, Rotterdam / Daleen Bloemers / 0640759521', '', '', '0', '', '', '', '', '1'),
@@ -982,7 +981,7 @@ INSERT INTO `vehicles` (`id`, `title`, `stat`, `content`, `created`, `last_modif
 ('10499', 'BQ0168', 'publish', '', '1635792589', '1636215693', '1636212093:2', '2', 'powunity', 'babboe-city', '', 'rotterdam', '1918.59', '101479', '', NULL, NULL, NULL, NULL, NULL, NULL, '1706803564', NULL, NULL),
 ('10500', 'BQ0169', 'publish', '', '1635792596', '1636215700', '1636212100:2', '2', 'powunity', 'babboe-city', '', 'rotterdam', '2587.72', '101546', '', NULL, NULL, NULL, NULL, NULL, NULL, '1703418964', NULL, NULL),
 ('10502', 'BQ0171', 'publish', '', '1635792613', '1636215713', '1636212113:2', '2', 'powunity', 'babboe-city', '', 'rotterdam', '2017', '101393', '', NULL, NULL, NULL, NULL, NULL, NULL, '1703754726', NULL, NULL),
-('10506', 'BQ0175', 'publish', '', '1635792633', '1693914951', '1693907751:1', '1', 'powunity', 'babboe-city', '', 'rotterdam', '2732.53', '102356', '0', NULL, NULL, NULL, '0', '', '', '1704803821', '', NULL),
+('10506', 'BQ0175', 'publish', '', '1635792633', '1693914951', '1693907751:1', '1', 'powunity', 'babboe-city', '', 'rotterdam', '2732.53', '102356', '1', NULL, NULL, NULL, '0', '', '', '1704803821', '', NULL),
 ('10508', 'BQ0177', 'publish', '', '1635792642', '1710770893', '1710769238:1', '1', 'tracefy', 'dolly', '', 'rotterdam', '2442.97', '102274', '0', NULL, NULL, NULL, '0', '', '', '1708791475', '', '0'),
 ('11014', 'BQ0182', 'publish', '', '1636469350', '1709580031', '1709576332:1', '1', 'tracefy', 'dolly', '', 'rotterdam', '', '102254', '', NULL, NULL, NULL, '0', '', '', '1709576448', '', NULL),
 ('11015', 'BQ0183', 'publish', '', '1636469355', '1708794967', '1708791226:2', '2', 'tracefy', 'dolly', '', 'rotterdam', '1690.67', '102302', '', NULL, NULL, NULL, '0', '', '', '1708791512', '', NULL),
@@ -1700,7 +1699,7 @@ ALTER TABLE `wh_issues`
 -- AUTO_INCREMENT for table `gebruikers`
 --
 ALTER TABLE `gebruikers`
-  MODIFY `gebruiker_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `gebruiker_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `open_issues`
