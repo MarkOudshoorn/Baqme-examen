@@ -36,13 +36,10 @@ function displayUserManagementButton() {
     $rol = $gebruiker->GetRol();
     if ($gebruiker->GetRol() === 'admin') {
         echo '<div id="navbar_buttonRight" onclick="ToggleSubMenu()">';
-        echo '<img src="../Resources/setting.svg">';
+            echo '<img src="../Resources/setting.svg">';
         echo '</div>';
         echo '<div id="subMenu">
             <div id="submenuOptions">
-                <button class="submenu_options_button" onclick="location.href=\'../Webpages/register.php\'";>
-                    <img class="submenu_option_button_image" src="../Resources/user-add.svg">
-                </button>
             </div>
             <div id="accounts">';
 
@@ -56,10 +53,38 @@ function displayUserManagementButton() {
         } else {
             echo "Geen gebruikers gevonden.";
         }
-
-        echo '</div>
-        </div>';
-
+            echo "</div>
+                    <div class='accountPass'>
+                        <div class='accountPass_pfp'>
+                            <img src='../Resources/user-add.svg' id='addUserImage'>
+                        </div>
+                        <form id='editForm-new' action='../Webpages/dashboard.php' method='post' class='accountPass_details'>
+                            <input type='text' name='email' placeholder='Email...'>
+                            <input type='password' name='password' placeholder='Wachtwoord...' >
+                            <select name='role'>
+                                    <option value='admin'>Admin</option>
+                                    <option value='user'>User</option>
+                            </select>
+                        
+                            <div class='accountPass_functionButtons'>
+                            <div class='accountPass_functionButton_column' id='accountPass_SaveButton_newAccount'
+                            onclick='ToggleSubmenuButtonsOnNewUser(`open`)'>
+                                <img src='../Resources/save.svg' style='position: absolute; right: 0'>
+                            </div>
+                            <button class='accountPass_functionButton_hidden' id='accountPass_confirmSaveButton_newAccount'
+                                        name='new' type='submit' style='top: 0; right: 30px'>
+                                <img src='../Resources/check.svg'>
+                            </button>
+                            <div class='accountPass_functionButton_hidden' id='accountPass_cancelSaveButton_newAccount'
+                            onclick='ToggleSubmenuButtonsOnNewUser(`close`)' style='top: 0; right: 0'>
+                                <img src='../Resources/remove.svg'>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>";
     }
 }
 
@@ -119,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
 
         $stmt->bindParam(':accountId', $accountId);
         if ($stmt->execute()) {
-            echo "<script>console.log('Account updated')</script>"; //vooral voor debugging, maar het kan geen kwaad om deze erin te laten
+            header("location: dashboard.php");
         } else {
             echo "<script>console.log('Error')</script>";
             echo "Query: " . $stmt->queryString;
@@ -135,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
         $stmt = $db->pdo->prepare("DELETE FROM gebruikers WHERE gebruiker_id = :deleteUserId");
         $stmt->bindParam(':deleteUserId', $accountId);
         if ($stmt->execute()) {
-            echo "<script>console.log('account deleted')</script>";
+            header("location: dashboard.php");
         } else {
             echo "<script>console.log('error')</script>";
             echo "Query: " . $stmt->queryString;
@@ -146,6 +171,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
     }
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["new"])) {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+    $role = $_POST["role"];
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+    try {
+        $stmt = $db->pdo->prepare("INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol) VALUES (:_gebruikersnaam, :_wachtwoord, :_rol)");
+        $stmt->bindParam(":_gebruikersnaam", $email);
+        $stmt->bindParam(":_wachtwoord", $hash);
+        $stmt->bindParam(":_rol", $role);
+        if($stmt->execute()) {
+            header("location: dashboard.php");
+        }
+        else {
+            echo "<script>console.log('error')</script>";
+            echo "Query: " . $stmt->queryString;
+        }
+    } catch (PDOException $e) {
+        echo "<script>console.log('error')</script>";
+        echo "Fout bij het aanmaken van de gebruiker: " . $e->getMessage();
+    }
+}
 
 
 
@@ -181,12 +229,12 @@ function AddAccountPass($gebruiker)
                 <input type="text" name='gebruikersnaam' value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
                 <input type='password' name='password' placeholder='Nieuw Wachtwoord' >
                 <select name='rol'>
-                    <?php foreach (['admin', 'user'] as $roleOption): ?>
+                    <?php foreach (['Admin', 'User'] as $roleOption): ?>
                         <option value='<?php echo $roleOption; ?>' <?php if($roleOption === $gebruiker->getRol()) echo 'selected'; ?>><?php echo $roleOption; ?></option>
                     <?php endforeach; ?>
                 </select>
                 </div>
-                <div>
+                <div class="accountPass_functionButtons">
                     <!--HELL ON EARTH-->
                     <!--Super ingewikkelde cosmetische knoppen om de edit en verwijderen er mooi at the laten zien.-->
                     <!--De ene knop zorgt ervoor dat die zelf invisible gaat, en de andere twee laat zien-->
@@ -263,53 +311,51 @@ function AddAccountPass($gebruiker)
 </html>
 
 <script>
-
-
-var url = window.location.href; 
-if(url.includes("navbar.php")){ //check of the gebruiker handmatig geprobeerd heeft om de navbar url in te vullen
-    window.location.href ="../Webpages/login.php";
-}
-
-
-//timer voor automatische vernieuwing van de pagina elke 5 minuten
-var countdown = 300; //seconden
-var timerDisplay = document.getElementById("navbar_timer");
-
-function updateTimer() {
-    var minutes = Math.floor(countdown / 60);
-    var seconds = countdown % 60;
-
-    var timeString = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
-    timerDisplay.innerText = timeString; //display de tijd in minuten
-
-    countdown--;
-
-    if (countdown < 0) {
-        location.reload();
-    } else {
-        setTimeout(updateTimer, 1000); // Wacht 1 seconde voordat de timer wordt bijgewerkt
+    var url = window.location.href; 
+    if(url.includes("navbar.php")){ //check of the gebruiker handmatig geprobeerd heeft om de navbar url in te vullen
+        window.location.href ="../Webpages/login.php";
     }
-}
-
-//Start de timer
-updateTimer();
 
 
-//klok functie om de huidige tijd weer te geven
-function updateClock() {
-    var now = new Date(); //huidige datum en tijd
-    var hours = now.getHours().toString().padStart(2, '0'); //uur (in 24-uurs formaat)
-    var minutes = now.getMinutes().toString().padStart(2, '0');
-    var seconds = now.getSeconds().toString().padStart(2, '0');
+    //timer voor automatische vernieuwing van de pagina elke 5 minuten
+    var countdown = 300; //seconden
+    var timerDisplay = document.getElementById("navbar_timer");
 
-    // Zet de tijd in het juiste formaat (hh:mm:ss)
-    var timeString = hours + ":" + minutes + ":" + seconds;
-    document.getElementById("navbar_clock").innerText ="Time : " + timeString; //update de klok
+    function updateTimer() {
+        var minutes = Math.floor(countdown / 60);
+        var seconds = countdown % 60;
 
-    //Update de klok elke seconde
-    setTimeout(updateClock, 1000);
-}
+        var timeString = minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0');
+        timerDisplay.innerText = timeString; //display de tijd in minuten
 
-// Start de klok
-updateClock();
+        countdown--;
+
+        if (countdown < 0) {
+            location.reload();
+        } else {
+            setTimeout(updateTimer, 1000); // Wacht 1 seconde voordat de timer wordt bijgewerkt
+        }
+    }
+
+    //Start de timer
+    updateTimer();
+
+
+    //klok functie om de huidige tijd weer te geven
+    function updateClock() {
+        var now = new Date(); //huidige datum en tijd
+        var hours = now.getHours().toString().padStart(2, '0'); //uur (in 24-uurs formaat)
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var seconds = now.getSeconds().toString().padStart(2, '0');
+
+        // Zet de tijd in het juiste formaat (hh:mm:ss)
+        var timeString = hours + ":" + minutes + ":" + seconds;
+        document.getElementById("navbar_clock").innerText ="Time : " + timeString; //update de klok
+
+        //Update de klok elke seconde
+        setTimeout(updateClock, 1000);
+    }
+
+    // Start de klok
+    updateClock();
 </script>

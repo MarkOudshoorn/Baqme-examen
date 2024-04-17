@@ -39,6 +39,26 @@ function AddOrRemoveItemToClassList_ID(addOrRemove, element, className)
         document.getElementById(element).classList.remove(className);
 }
 
+function ToggleSubmenuButtonsOnNewUser(openOrClose)
+{
+    if(openOrClose == "open")
+    {
+        document.getElementById("accountPass_SaveButton_newAccount").classList.add("accountPass_functionButton_column_hidden");
+        document.getElementById("accountPass_confirmSaveButton_newAccount").classList.remove("accountPass_functionButton_hidden");
+        document.getElementById("accountPass_confirmSaveButton_newAccount").classList.add("accountPass_functionButton_row");
+        document.getElementById("accountPass_cancelSaveButton_newAccount").classList.remove("accountPass_functionButton_hidden");
+        document.getElementById("accountPass_cancelSaveButton_newAccount").classList.add("accountPass_functionButton_row");
+    }
+    else
+    {
+        document.getElementById("accountPass_SaveButton_newAccount").classList.remove("accountPass_functionButton_column_hidden");
+        document.getElementById("accountPass_confirmSaveButton_newAccount").classList.add("accountPass_functionButton_hidden");
+        document.getElementById("accountPass_confirmSaveButton_newAccount").classList.remove("accountPass_functionButton_row");
+        document.getElementById("accountPass_cancelSaveButton_newAccount").classList.add("accountPass_functionButton_hidden");
+        document.getElementById("accountPass_cancelSaveButton_newAccount").classList.remove("accountPass_functionButton_row");
+    }
+}
+
 //Zeer slechte code om bepaalde elementen te hiden en te displayen (wordt gebruikt voor de edit/delete knoppen in de navbar's submenu)
 function ToggleSubmenuButtons(type, number, appearOrDisappear)
 {
