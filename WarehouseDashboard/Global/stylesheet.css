@@ -337,7 +337,7 @@ img{
     .stad-list {
         display: flex;
         height: 50vh;
-        flex-wrap: wrap; /* Allow items to wrap to next line */
+        flex-wrap: wrap;
     }
 
     .listHeader-0 {
@@ -396,6 +396,7 @@ img{
         background-image: linear-gradient(180deg, rgb(82,224,193), rgb(176, 244, 230));
         border-radius: 10px;
         display: inline-block;
+        color: rgb(9, 84, 65);
         margin: 2px;
     }
 
@@ -404,6 +405,10 @@ img{
         justify-content: space-between;
         align-items: center;
         padding: 5px;
+    }
+
+    .issues-container {
+        font-size: 17px;
     }
 
     .subHeader {
@@ -421,6 +426,39 @@ img{
         width: 100%;
         box-sizing: border-box;
         font-size: 10px;
+    }
+
+    .time_navbar {
+        width: 100%;
+        height: 30px;
+        background-color: rgb(39 57 56);
+        display: flex;
+        padding-top: 2.5px;
+        box-sizing: border-box;
+    }
+
+    #navbar_clock {
+        font-size: x-large;
+        font-family: "Poppins", sans-serif;
+        color: white;
+    }
+
+    #navbar_timer {
+        font-size: x-large;
+        font-family: monospace;
+        color: white;
+        position: absolute;
+        right: 50%;
+        left: 50%;
+        width: 200px;
+    }
+
+    #navbar_user_info {
+        font-size: x-large;
+        font-family: monospace;
+        color: white;
+        right: 0;
+        position: absolute;
     }
 
 
@@ -456,8 +494,22 @@ img{
         filter: brightness(0) invert(1);
     }
 
-        /* #region accountsSubMenu */
+    #navbar_errorMessage {
+        display: flex;
+        background-color: red;
+        color: white;
+        align-items: center;
+        justify-content: center;
+        width: 800px;
+        height: 5vh;
+        position: fixed;
+        left: 50%;
+        transform: translate(-50%);
+        border-radius: 0 0 30px 30px;
+        z-index: 2;
+    }
 
+        /* #region accountsSubMenu */
         .blur {
             z-index: 0;
             width: 110vw;
@@ -483,8 +535,8 @@ img{
         }
 
         #subMenu{
+            background-color: rgb(30, 32, 34);;
             z-index: 2;
-            background-color: rgb(40,43,48);
             position: fixed;
             top: 0;
             right: -500px;
@@ -497,9 +549,7 @@ img{
             flex-wrap: wrap;
             justify-content: flex-end;
             width: 420px;
-            height: 75px;
-            background-color: rgb(30, 32, 34);
-            
+            height: 70px;
         }
 
         .submenu_options_button{
@@ -525,6 +575,7 @@ img{
             outline: none;
             -ms-overflow-style: none;
             scrollbar-width: none;
+            background-color: rgb(40,43,48);
         }
 
         .accountPass {
@@ -600,7 +651,7 @@ img{
             height: 100%;
             width: 100%;
             box-sizing: border-box;
-            padding: 5px;
+            cursor: pointer;
         }
 
         #accountPass_SaveButton_newAccount:hover {
@@ -677,57 +728,6 @@ img{
             transition: 500ms;
         }
 
-        .time_navbar {
-            width: 100%;
-            height: 30px;
-            background-color: rgb(39 57 56);
-            display: flex;
-            padding-top: 2.5px;
-            box-sizing: border-box;
-        }
-
-        #navbar_clock {
-            font-size: x-large;
-            font-family: "Poppins", sans-serif;
-            color: white;
-        }
-
-        #navbar_timer {
-            font-size: x-large;
-            font-family: monospace;
-            color: white;
-            position: absolute;
-            right: 50%;
-            left: 50%;
-            width: 200px;
-        }
-
-        #navbar_user_info {
-            font-size: x-large;
-            font-family: monospace;
-            color: white;
-            right: 0;
-            position: absolute;
-        }
-
-        #subMenu {
-            z-index: 2;
-            background-color: rgb(40,43,48);
-            position: fixed;
-            top: 0;
-            right: -500px;
-            height: 100%;
-            transition: right 0.3s ease;
-        }
-
-        #submenuOptions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            width: 420px;
-            height: 70px;
-            background-color: rgb(30, 32, 34);
-        }
 
         .submenu_options_button {
             width: 75px;

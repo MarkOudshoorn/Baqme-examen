@@ -47,7 +47,7 @@ function displayUserManagementButton() {
 
         if ($stmt) {
             while($row = $stmt->fetch()) {
-                $gebruiker = new Gebruiker($row["gebruiker_id"], $row["gebruikersnaam"], $row["wachtwoord"], $row["rol"], $row["created_at"], $row["profilepicture"]);
+                $gebruiker = new Gebruiker($row["gebruiker_id"], $row["gebruikersnaam"], $row["wachtwoord"], $row["rol"], $row["created_at"], $row["profielfoto"]);
                 AddAccountPass($gebruiker, GetAllRoles($db));
             }
         } else {
@@ -55,10 +55,11 @@ function displayUserManagementButton() {
         }
             echo "</div>
                     <div class='accountPass'>
-                        <div class='accountPass_pfp'>
+                        <div class='accountPass_pfp' onclick='document.getElementById(`fileInput_new`).click();'>
                             <img src='../Resources/user-add.svg' id='addUserImage'>
                         </div>
-                        <form id='editForm-new' action='../Webpages/dashboard.php' method='post' class='accountPass_details'>
+                        <form id='editForm-new' enctype='multipart/form-data' action='../Webpages/dashboard.php' method='post' class='accountPass_details'>
+                            <input type='file' name='pfp' id='fileInput_new' class='hidden'>
                             <input type='text' name='email' placeholder='Email...'>
                             <input type='password' name='password' placeholder='Wachtwoord...' >
                             <select name='role'>
@@ -110,6 +111,9 @@ function CheckForUpdatedPw($password)
 
 //if-statements om te kijken of we van een redirect kwamen waar een formulier ingevult was
 //zo ja, waren alle gegevens ingevult en correct? pas dan de database aan op de gebruiker's request
+
+$error = null; //hierop kunnen we later checken of we een error weer moeten geven
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $accountId = $_POST['accountId'];
     $newPassword = $_POST['password'];
@@ -126,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
                                             rol = :newRol,
                                             created_at = :newCreated_at,
                                             updated = :newUpdated,
-                                            profilepicture = :newProfilepicture
+                                            profielfoto = :newProfilepicture
                                             WHERE gebruiker_id = :accountId");
 
         if ($isNewPw == "new") { //als het wachtwoord nieuw is moet deze nog gehashed worden
@@ -175,28 +179,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["new"])) {
     $email = $_POST["email"];
     $password = $_POST["password"];
     $role = $_POST["role"];
+
+    if(isset($_FILES["pfp"]))
+    {
+        echo "<script>console.log('pfp set')</script>";
+        $pfp = $_FILES["pfp"];
+        $filedata = file_get_contents($pfp['tmp_name']);
+        $base64 = base64_encode($filedata);
+    }
+    else
+    {
+        echo "<script>console.log('pfp NOT set')</script>";
+    }
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
-    try {
-        $stmt = $db->pdo->prepare("INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol) VALUES (:_gebruikersnaam, :_wachtwoord, :_rol)");
-        $stmt->bindParam(":_gebruikersnaam", $email);
-        $stmt->bindParam(":_wachtwoord", $hash);
-        $stmt->bindParam(":_rol", $role);
-        if($stmt->execute()) {
-            header("location: dashboard.php");
-        }
-        else {
+    if(!IsEmailInUse($email))
+    {
+        try {
+            if(isset($base64)) {
+                $stmt = $db->pdo->prepare("INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol, profielfoto) VALUES (:_gebruikersnaam, :_wachtwoord, :_rol, :_profielfoto)");
+                $stmt->bindParam(":_gebruikersnaam", $email);
+                $stmt->bindParam(":_wachtwoord", $hash);
+                $stmt->bindParam(":_rol", $role);
+                $stmt->bindParam(":_profielfoto", $base64);
+            }
+            else {
+                $stmt = $db->pdo->prepare("INSERT INTO gebruikers (gebruikersnaam, wachtwoord, rol) VALUES (:_gebruikersnaam, :_wachtwoord, :_rol)");
+                $stmt->bindParam(":_gebruikersnaam", $email);
+                $stmt->bindParam(":_wachtwoord", $hash);
+                $stmt->bindParam(":_rol", $role);
+            }
+
+            if($stmt->execute()) {
+                header("location: dashboard.php");
+            }
+            else {
+                echo "<script>console.log('error')</script>";
+                echo "Query: " . $stmt->queryString;
+            }
+        } catch (PDOException $e) {
             echo "<script>console.log('error')</script>";
-            echo "Query: " . $stmt->queryString;
+            echo "Fout bij het aanmaken van de gebruiker: " . $e->getMessage();
         }
-    } catch (PDOException $e) {
-        echo "<script>console.log('error')</script>";
-        echo "Fout bij het aanmaken van de gebruiker: " . $e->getMessage();
+    }
+    else
+    {
+        $error = "Het gegeven e-mailadres bestaat al.";
     }
 }
 
 
+//functies voor het checken of het gegeven email adres al in de database bestaat
+//worden aangeroepen bij het maken van een nieuw account
+function IsEmailInUse($email)
+{
+    $existingAccounts = GetExistingAccounts();
+    if ($existingAccounts !== null) {
+        foreach ($existingAccounts as $account) {
+            if ($account['gebruikersnaam'] === $email) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+function GetExistingAccounts()
+{
+    global $db;
+    $stmt = $db->pdo->prepare("SELECT gebruikersnaam FROM gebruikers");
+
+    try{
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException) {
+        echo "<script>console.log('encountered an error while fetching accounts')</script>";
+        return null;
+    }
+}
 
 
 $howManyAccounts = 0;
@@ -213,7 +273,7 @@ function AddAccountPass($gebruiker)
     <?php 
     $profilePicture = $gebruiker->GetProfilePicture(); //display een profile picture indien de gebruiker en een heeft
     if (!empty($profilePicture)) {
-        echo '<img src="data:image/jpeg;base64,'.base64_encode($profilePicture).'">';
+        echo '<img src="data:image/jpeg;base64,'. $profilePicture .'">';
     } else {
         echo '<img src="../Resources/user.svg" alt="Profielfoto">';
     }
@@ -298,6 +358,16 @@ function AddAccountPass($gebruiker)
         <div id="navbar_buttonCenter" onclick="Redirect('../Webpages/dashboard.php')">
             <img src="../Resources/BQ-Logo-text.png">
         </div>
+
+        <?php
+        if($error != null)
+        {
+            echo '<div id="navbar_errorMessage">
+                ' . $error . '
+                </div>';
+        }
+        ?>
+        
         <?php displayUserManagementButton(); ?> <!--functie die checkt of de account management knop ge-displayed moet worden-->
         <div class="time_navbar">
             <div id="navbar_clock"></div>
@@ -311,6 +381,29 @@ function AddAccountPass($gebruiker)
 </html>
 
 <script>
+
+    document.getElementById('fileInput_new').addEventListener('change', handleFileSelect);
+
+    function handleFileSelect(event) {
+        var input = event.target;
+        var output = document.getElementById('addUserImage');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                output.src = e.target.result;
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+
+
+
+
     var url = window.location.href; 
     if(url.includes("navbar.php")){ //check of the gebruiker handmatig geprobeerd heeft om de navbar url in te vullen
         window.location.href ="../Webpages/login.php";
