@@ -11,6 +11,10 @@ body, html{
     font-family: "Poppins", sans-serif;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 img{
     width: inherit;
     height: inherit;

@@ -16,6 +16,23 @@ document.addEventListener("DOMContentLoaded", function() {
 let isOpen = false; //initiate het menu als false
 
 
+
+function handleFileSelect(event) {
+    var input = event.target;
+    var output = document.getElementById('addUserImage');
+
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            output.src = e.target.result;
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+
 //wordt aangeroepen zodra de gebruiker het submenu wilt openen (in de navbar)
 function ToggleSubMenu() {
     isOpen = !isOpen; // Toggle the state
@@ -78,7 +95,27 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
             AddOrRemoveItemToClassList_ID("add", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_hidden");
-            AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_hidden");        }
+            AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_hidden");        
+            if(document.getElementById('defaultUserImage-' + number))
+            {
+                elem = document.getElementById('defaultUserImage-' + number);
+                elem.src = "../Resources/user-add.svg";
+                elem.classList.add("clickable");
+                elem.onclick = function()
+                {
+                    document.getElementById(`updateProfilePicture-` + number).click();
+                }
+            }
+            else
+            {
+                elem = document.getElementById('customUserImage-' + number);
+                elem.classList.add("clickable");
+                elem.onclick = function()
+                {
+                    document.getElementById(`updateProfilePicture-` + number).click();
+                }
+            }
+        }
     }
     else
     {
@@ -88,7 +125,8 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
             AddOrRemoveItemToClassList_ID("remove", "accountPass_confirmDeleteButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelDeleteButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("add", "accountPass_confirmDeleteButton_" + number, "accountPass_functionButton_hidden");
-            AddOrRemoveItemToClassList_ID("add", "accountPass_cancelDeleteButton_" + number, "accountPass_functionButton_hidden");        }
+            AddOrRemoveItemToClassList_ID("add", "accountPass_cancelDeleteButton_" + number, "accountPass_functionButton_hidden");        
+        }
         else
         {
             AddOrRemoveItemToClassList_ID("remove", "accountPass_EditButton_" + number, "accountPass_functionButton_hidden");
@@ -96,6 +134,19 @@ function ToggleSubmenuButtons(type, number, appearOrDisappear)
             AddOrRemoveItemToClassList_ID("remove", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_row");
             AddOrRemoveItemToClassList_ID("add", "accountPass_confirmEditButton_" + number, "accountPass_functionButton_hidden");
             AddOrRemoveItemToClassList_ID("add", "accountPass_cancelEditButton_" + number, "accountPass_functionButton_hidden");
+            if(document.getElementById('defaultUserImage-' + number))
+            {
+                elem = document.getElementById('defaultUserImage-' + number);
+                elem.src = "../Resources/user.svg";
+                elem.onclick = '';
+                elem.classList.remove("clickable");
+            }
+            else
+            {
+                elem = document.getElementById('customUserImage-' + number);
+                elem.onclick = '';
+                elem.classList.remove("clickable");
+            }
         }
     }
 }

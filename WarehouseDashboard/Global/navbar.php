@@ -273,9 +273,9 @@ function AddAccountPass($gebruiker)
     <?php 
     $profilePicture = $gebruiker->GetProfilePicture(); //display een profile picture indien de gebruiker en een heeft
     if (!empty($profilePicture)) {
-        echo '<img src="data:image/jpeg;base64,'. $profilePicture .'">';
+        echo '<img src="data:image/jpeg;base64,'. $profilePicture .'" id="customUserImage-' . $howManyAccounts . '">';
     } else {
-        echo '<img src="../Resources/user.svg" alt="Profielfoto">';
+        echo '<img src="../Resources/user.svg" alt="Profielfoto" id="defaultUserImage-' . $howManyAccounts . '">';
     }
     ?>
     </div>
@@ -286,6 +286,8 @@ function AddAccountPass($gebruiker)
             </div>
             <form id="editForm-<?php echo $howManyAccounts ?>" action="../Webpages/dashboard.php" method="post" class="editForm-invis">
                 <input type='hidden' name='accountId' value='<?php echo $gebruiker->getGebruikerId(); ?>'>
+                <input type='hidden' name='oldPfp' value='<?php echo$profilePicture ?>'>
+                <input type='file' name='pfp' id='updateProfilePicture-<?php echo $howManyAccounts ?>' class="hidden">
                 <input type="text" name='gebruikersnaam' value="<?php echo $gebruiker->getGebruikersnaam(); ?>">
                 <input type='password' name='password' placeholder='Nieuw Wachtwoord' >
                 <select name='rol'>
@@ -313,7 +315,6 @@ function AddAccountPass($gebruiker)
                         <img src="../Resources/remove.svg">
                     </div>
 
-
                     <div class="accountPass_functionButton_column" style="top: 30px" id="accountPass_EditButton_<?php echo $howManyAccounts; ?>"
                         onclick="ToggleSubmenuButtons('edit', '<?php echo $howManyAccounts; ?>', 'appear'); 
                         AddOrRemoveItemToClassList_ID('remove', 'editForm-<?php echo $howManyAccounts ?>', 'editForm-invis');
@@ -334,6 +335,9 @@ function AddAccountPass($gebruiker)
             </form>
         </div>
     </div>
+    <script>
+        document.getElementById('updateProfilePicture-<?php echo $howManyAccounts ?>').addEventListener('change', handleFileSelect);
+    </script>
     <?php
     $howManyAccounts++; //increment de howmanyaccounts var om de volgende loop unieke IDs te krijgen (voor js functions enzo)
 }
@@ -381,28 +385,7 @@ function AddAccountPass($gebruiker)
 </html>
 
 <script>
-
     document.getElementById('fileInput_new').addEventListener('change', handleFileSelect);
-
-    function handleFileSelect(event) {
-        var input = event.target;
-        var output = document.getElementById('addUserImage');
-
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                output.src = e.target.result;
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-
-
-
-
 
     var url = window.location.href; 
     if(url.includes("navbar.php")){ //check of the gebruiker handmatig geprobeerd heeft om de navbar url in te vullen
